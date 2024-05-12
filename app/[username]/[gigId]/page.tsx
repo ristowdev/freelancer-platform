@@ -13,7 +13,7 @@ import { SellerDetails } from "./_components/seller-details";
 import { Reviews } from "../_components/reviews/reviews";
 import { AddReview } from "../_components/reviews/add-review";
 
-
+ 
 interface PageProps {
     params: {
         username: string

@@ -72,6 +72,16 @@ const config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      boxShadow:{
+        'custom': '0 1.2px 1.92251px rgba(0,0,0,.02),0 2px 3.68135px rgba(0,0,0,.04),0 1px 5px rgba(0,0,0,.05)',
+        'custom-2': '0 .14px 2.29266px rgba(0,0,0,.032),0 .37px 4.42626px rgba(0,0,0,.048),0 3px 7px rgba(0,0,0,.09)'
+      },
+      height: {
+        'calc-80px': 'calc(100vh - 138px)',
+        'calc-side-bar-inbox': 'calc(100vh - 260px)',
+        'scroll-area-height': 'calc(100vh - 370px)',
+        'search-sidebar': 'calc(100vh - 230px)'
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

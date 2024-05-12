@@ -18,7 +18,7 @@ export const ListItem = ({ title, subcategory }: ListItemProps) => {
             },
         }, { skipEmptyString: true, skipNull: true });
         router.push(url);
-    };
+    }; 
 
     return (
         <button

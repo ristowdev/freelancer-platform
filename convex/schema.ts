@@ -10,12 +10,12 @@ export default defineSchema({
         portfolioUrls: v.optional(v.array(v.string())),
         profileImageUrl: v.optional(v.string()),
         favoritedSellerIds: v.optional(v.array(v.string())),
-        tokenIdentifier: v.string(),
+        tokenIdentifier: v.string(), // clerk id
         customTag: v.optional(v.string()),
         stripeAccountId: v.optional(v.string()),
         stripeAccountSetupComplete: v.optional(v.boolean()),
     })
-        .index("by_token", ["tokenIdentifier"])
+        .index("by_token", ["tokenIdentifier"]) // by clerk id
         .index("by_username", ["username"]),
     reviews: defineTable({
         authorId: v.id("users"),
@@ -62,6 +62,66 @@ export default defineSchema({
         .searchIndex("search_title", {
             searchField: "title",
         }),
+    projects: defineTable({
+            title: v.string(),
+            slug: v.string(),
+            experienceLevel: v.string(),
+            paymentVerified: v.optional(v.boolean()),
+            location: v.string(),
+            priceType: v.string(),
+            price: v.number(),
+            tags: v.array(v.string()),
+            descriptionShort: v.string(),
+            descriptionLong: v.string(),
+            // categorySlug: v.string(),
+            categoryId: v.id("categories"),
+            sellerId: v.id("users"),
+            published: v.optional(v.boolean()),
+            clicks: v.number(),
+        })
+            .index("by_sellerId", ["sellerId"])
+            .index("by_categoryId", ["categoryId"])
+            .index("by_published", ["published"])
+            .index("by_slug", ["slug"])
+            .searchIndex("search_title", {
+                searchField: "title",
+            }),
+    proposals: defineTable({
+        projectId: v.id("projects"),
+        userId: v.id("users"),
+        clientId: v.id("users"), 
+        hourlyRate: v.number(),
+        coverLetter: v.string(),
+        status: v.string(),
+    })
+        .index("by_projectId", ["projectId"])
+        .index("by_userId", ["userId"])
+        .index("by_clientId", ["clientId"]),
+    notifications: defineTable({
+        userId: v.id("users"),
+        fromUserId: v.id("users"),
+        title: v.string(),
+        message: v.string(),
+        read: v.boolean(),
+        isNew: v.boolean(),
+        type: v.union(
+            v.literal("AcceptedProposal"),
+            v.literal("NewPayment"), 
+        ), 
+    })
+        .index("by_userId", ["userId"])
+        .index("by_fromUserId", ["fromUserId"]),
+    inboxNotifications: defineTable({
+        toUserId: v.id("users"),
+        fromUserId: v.id("users"),
+        message: v.string(),
+        read: v.boolean(),
+        isNew: v.boolean(),
+        conversationId: v.id("conversations"),
+    })
+        .index("by_toUserId", ["toUserId"])
+        .index("by_fromUserId", ["fromUserId"])
+        .index("by_conversationId", ["conversationId"]),
     offers: defineTable({
         gigId: v.id("gigs"),
         title: v.string(),
@@ -97,7 +157,10 @@ export default defineSchema({
         .index("by_storageId", ["storageId"]),
     categories: defineTable({
         name: v.string(),
-    }),
+        slug: v.string(),
+    })
+        .index("by_slug", ["slug"])
+    ,
     subcategories: defineTable({
         categoryId: v.id("categories"),
         name: v.string(),
@@ -114,15 +177,38 @@ export default defineSchema({
         text: v.optional(v.string()),
         imageUrl: v.optional(v.string()),
         seen: v.boolean(),
+        read: v.optional(v.boolean()),
+        isNew: v.optional(v.boolean()),
+        playSound: v.optional(v.boolean()),
+        lastMessageUserId: v.optional(v.id("users")),
         conversationId: v.id("conversations"),
+        type: v.optional(
+            v.union( 
+                v.literal("onlyMessage"),
+                v.literal("onlyFiles"),
+                v.literal("messageWithFiles"),
+            )
+        )
     })
-        .index('by_conversationId', ['conversationId']),
+        .index('by_conversationId', ['conversationId'])
+        .index('by_lastMessageUserId', ['lastMessageUserId']),
     conversations: defineTable({
         participantOneId: v.id("users"),
         participantTwoId: v.id("users"),
     })
         .index('by_participantOneId', ['participantOneId', 'participantTwoId'])
         .index('by_participantTwoId', ['participantTwoId', 'participantOneId']),
+    conversationBelongsTo: defineTable({
+        userId: v.id("users"),
+        conversationId: v.id("conversations"),
+        belongsTo: v.union(
+            v.literal("allMessages"),
+            v.literal("archived"),
+            v.literal("spam"),
+        )
+    })
+        .index('by_conversationId', ['conversationId'])
+        .index('by_userId', ['userId']),
     userFavorites: defineTable({
         userId: v.id("users"),
         gigId: v.id("gigs"),
@@ -130,4 +216,22 @@ export default defineSchema({
         .index("by_gig", ["gigId"])
         .index("by_user_gig", ["userId", "gigId"])
         .index("by_user", ["userId"]),
+    favoriteConversations: defineTable({
+        userId: v.id("users"),
+        conversationId: v.id("conversations"),
+    })
+        .index("by_fav_conv", ["conversationId"]) 
+        .index("by_user", ["userId"]),
+    files: defineTable({
+        name: v.string(),
+        type: v.string(),
+        fileId: v.id("_storage"),
+        temporaryId: v.string(),
+        messageId: v.optional(v.id("messages")),
+        userId: v.id("users"),
+    })
+        .index("by_temporaryId", ["temporaryId"]) 
+        .index("by_messageId", ["messageId"]) 
+        .index("by_user", ["userId"]),
+    
 });

@@ -12,6 +12,10 @@ export type FullGigType = Doc<"gigs"> & {
     seller: Doc<"users">;
 }
 
+export type FullProjectType = Doc<"projects"> & {  
+    seller: Doc<"users">;
+}
+
 export type MessageWithUserType = Doc<"messages"> & {
     user: Doc<"users">
 };

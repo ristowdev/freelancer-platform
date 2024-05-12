@@ -22,11 +22,11 @@ export const create = mutation({
             throw new Error("Unauthorized");
         }
 
-        categories.map(async (category) => {
-            await ctx.db.insert("categories", {
-                name: category.name
-            })
-        })
+        // categories.map(async (category) => {
+        //     await ctx.db.insert("categories", {
+        //         name: category.name
+        //     })
+        // })
 
         return;
     },

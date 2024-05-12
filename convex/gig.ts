@@ -10,7 +10,7 @@ export const create = mutation({
         title: v.string(),
         description: v.string(),
         subcategoryId: v.string(),
-    },
+    }, 
     handler: async (ctx, args) => {
         const identity = await ctx.auth.getUserIdentity();
 

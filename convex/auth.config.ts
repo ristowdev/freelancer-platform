@@ -1,7 +1,7 @@
 export default {
     providers: [
       {
-        domain: "https://direct-gopher-17.clerk.accounts.dev/",
+        domain: "https://capital-marmoset-38.clerk.accounts.dev",
         applicationID: "convex",
       },
     ]

@@ -1,76 +1,251 @@
 'use client';
-
+import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import { Doc } from "@/convex/_generated/dataModel";
 import { useApiMutation } from "@/hooks/use-api-mutation";
-import { useState } from "react";
-import {
-    HiPaperAirplane,
-    HiPhoto
-} from "react-icons/hi2";
+import { useRef, useState } from "react";
+import PickEmoji from "./pick-emoji";
+import FileUpload from "./file-system/file-upload";
+import ListFiles from "./file-system/list-files";
+import { cn } from "@/lib/utils";
+import { useMutation } from "convex/react";
+import { generateTemporaryId } from "@/utils/temporary-id";
 
 interface FormProps {
     userId: Doc<"users">["_id"];
     conversationId: Doc<"conversations">["_id"];
+    unReadMessages: number;
 }
 
+interface UploadProgress {
+    [key: number]: number;  
+}
+  
 const Form = ({
     userId,
     conversationId,
+    unReadMessages,
 }: FormProps) => {
     const [text, setText] = useState<string>("");
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [fileList, setFileList] = useState<FileList | null>(null);
+    const [filesUploadProgress, setFilesUploadProgress] = useState<UploadProgress>({});
+    const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+
     const {
         mutate,
         pending
     } = useApiMutation(api.messages.send);
 
-    const handleSubmit = () => {
-        if (text === "") return;
-        mutate({
-            text: text,
-            userId,
-            seen: false,
-            conversationId,
-        })
-            .then(() => {
-                setText("");
+    const {
+        mutate: readAllMessages,
+    } = useApiMutation(api.messages.readAllMessages);
+
+    const {
+        mutate: createFile,
+    } = useApiMutation(api.files.createFile);
+
+    const generateUploadUrl = useMutation(api.files.generateUploadUrl);
+    
+    const handleSubmit = async () => {
+        if ((!fileList?.length && !text) || isSubmitted || pending) return;
+
+        if(!fileList?.length && text){
+            mutate({
+                text: text,
+                userId,
+                seen: false,
+                conversationId,
+                type: "onlyMessage"
             })
-            .catch((error) => {
-                console.error(error);
-            });
+                .then(() => {
+                    setText("");
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }else{
+            if (fileList?.length) {
+                setIsSubmitted(true);
+                const uploadPromises: Promise<void>[] = [];
+                const temporaryId = generateTemporaryId(); 
+
+                for (let i = 0; i < fileList.length; i++) {
+                    const file = fileList[i];
+                    const postUrl = await generateUploadUrl();
+            
+                    const promise = new Promise<void>((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.upload.addEventListener('progress', (event) => {
+                        if (event.lengthComputable) {
+                        const uploadProgress = Math.round((event.loaded / event.total) * 100);
+                        setFilesUploadProgress(prevProgress => ({
+                            ...prevProgress,
+                            [i]: uploadProgress
+                        }));
+                        }
+                    });
+            
+                    xhr.open('POST', postUrl);
+                    xhr.setRequestHeader('Content-Type', file.type);
+                    xhr.onload = () => {
+                        if(xhr.status === 200){
+                            const response = JSON.parse(xhr.responseText);
+                            const storageId = response.storageId; 
+                            createFile({
+                                name: file.name,
+                                type: file.type,
+                                fileId: storageId,
+                                temporaryId,
+                            })
+                                .then(() => { 
+                                    resolve();
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                });
+                        }else{
+                            reject(new Error('Error: Non-200 status code received'));
+                        }
+                        
+                    };
+                    xhr.onerror = (error) => reject(error);
+                    xhr.send(file);
+                    });
+            
+                    uploadPromises.push(promise);
+                }
+            
+                try {
+                    await Promise.all(uploadPromises); 
+
+                    mutate({
+                        text: text ? text : "",
+                        userId,
+                        seen: false,
+                        conversationId,
+                        type: text ? "messageWithFiles" : "onlyFiles",
+                        temporaryId
+                    })
+                        .then(() => {
+                            setText("");
+                            setFileList(null);
+                            setIsSubmitted(false);
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                        });
+
+                    
+                } catch (error) {
+                    console.error('Error uploading files:', error);
+                }
+            } else {  
+                
+            }
+        }
+    };
+    
+
+      
+    // const handleSubmit = async () => {
+    //     if (text === "" && !fileList) return;
+    //     if(fileList && fileList?.length > 0){
+    //         const postUrl = await generateUploadUrl();
+    //         const file = fileList[0];
+    //         const fileType = file.type;
+    //         uploadFile(file, postUrl)
+            
+    //         // const result = await fetch(postUrl, {
+    //         //     method: "POST",
+    //         //     headers: { "Content-Type": fileType },
+    //         //     body: file,
+    //         // });
+
+    //         // const { storageId } = await result.json();
+    //         // console.log(storageId)
+    //     }else{
+    //         mutate({
+    //             text: text,
+    //             userId,
+    //             seen: false,
+    //             conversationId,
+    //         })
+    //             .then(() => {
+    //                 setText("");
+    //             })
+    //             .catch((error) => {
+    //                 console.error(error);
+    //             });
+    //     }
+    // }
+
+    const handleReadAllMessages = () => {
+        if(unReadMessages > 0){
+            readAllMessages({ 
+                conversationId,
+            })
+                .then(() => {
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
     }
 
+    const onEmojiSelect = (emoji: any) => {
+        if (!inputRef.current) return;
+        const startPos = inputRef.current.selectionStart ?? 0;
+        const endPos = inputRef.current.selectionEnd ?? 0;
+        const newText =
+            text.substring(0, startPos) +
+            emoji.emoji +
+            text.substring(endPos, text.length);
+        setText(newText);
+        inputRef.current.selectionStart = startPos + emoji.length;
+        inputRef.current.selectionEnd = startPos + emoji.length;
+        inputRef.current.focus();
+    };
+
+    const onFileSelect = (files: FileList | null) => {
+        if (!files) return;
+      
+        if (!fileList) {
+          setFileList(files);
+        } else {
+          const updatedFiles: File[] = [];
+          Array.from(fileList).forEach((file) => updatedFiles.push(file));
+          Array.from(files).forEach((file) => updatedFiles.push(file));
+          const updatedFileList = new DataTransfer();
+          updatedFiles.forEach((file) => updatedFileList.items.add(file));
+          setFileList(updatedFileList.files);
+        }
+    };
+
+    const handleOnRemoveFile = (index: number) => {
+        if (fileList) {
+          const updatedFiles = Array.from(fileList);
+          updatedFiles.splice(index, 1);
+          const updatedFileList = new DataTransfer();
+          updatedFiles.forEach((file) => updatedFileList.items.add(file));
+          setFileList(updatedFileList.files);
+        }
+    };
+
     return (
-        <div
-            className="
-            fixed
-            bottom-0
-            p-4
-            bg-zinc-100 
-            border-2
-            flex 
-            items-center 
-            gap-2 
-            lg:gap-4 
-            w-full
-        "
-        >
-            <div
-                className="flex items-center gap-2 lg:gap-4 w-full"
-            >
-                <div className="relative w-full">
+        <div className="pl-[24px] pr-[24px]" >
+            <div className="flex items-center gap-2 lg:gap-4 w-full flex-col">
+                <div className={
+                            cn(
+                                "relative w-full bg-white border border-[#e4e5e7] rounded-xl",
+                                fileList && fileList?.length > 0 && "h-[190px]"
+                            )
+                        }>
+                            
                     <input
-                        placeholder={"Enter message..."}
-                        className="
-                            text-black
-                            font-light
-                            py-2
-                            px-4
-                            bg-zinc-50
-                            w-full 
-                            rounded-full
-                            focus:outline-none
-                        "
+                        ref={inputRef}
+                        placeholder={"Send message..."}
+                        className="text-black font-light py-2 px-4 bg-transparent w-full focus:outline-none h-[46px]"
                         value={text}
                         onChange={(e) => setText(e.target.value)}
                         onKeyDown={(e) => {
@@ -79,26 +254,50 @@ const Form = ({
                                 handleSubmit();
                             }
                         }}
+                        onFocus={(e)=>{
+                            handleReadAllMessages()
+                        }}
                     />
+                    {fileList && fileList?.length > 0 &&
+                        <>
+                            <div className="w-full flex pr-[25px] pl-[15px]">
+                                <div className="flex flex-1"></div>
+                                <span className="text-xs font-light text-[#95979d]">{fileList.length == 1 ? fileList.length+" File" : fileList.length+" Files"}</span>
+                            </div>
+                            <div className="bottom-0 left-0 w-full p-[15px] pt-0 mt-[10px] ">
+                                <div className="pt-[10px] pb-[15px] border-t border-[#dadbdd]">
+                                    <ListFiles 
+                                        fileList={fileList}
+                                        onRemoveFile={handleOnRemoveFile}
+                                        filesUploadProgress={filesUploadProgress}
+                                    />
+                                </div>
+                            </div>
+                        </>
+                    }
                 </div>
-                <button
-                    type="submit"
-                    className="
-                        rounded-full 
-                        p-2 
-                        bg-sky-500 
-                        cursor-pointer 
-                        hover:bg-sky-600 
-                        transition
-                    "
-                    onClick={handleSubmit}
-                    disabled={pending}
-                >
-                    <HiPaperAirplane
-                        size={18}
-                        className="text-white"
-                    />
-                </button>
+
+                <div className="w-full flex items-center">
+                    <div className="flex flex-1">
+                        <PickEmoji 
+                            onEmojiSelect={onEmojiSelect}
+                        />
+                        <FileUpload
+                            onFileSelect={onFileSelect}
+                        />
+                    </div>
+                    <div>
+                        <Button
+                            type="submit"
+                            className="hover:bg-transparent p-0 m-0 w-auto h-auto text-sm"
+                            onClick={handleSubmit}
+                            disabled={pending || isSubmitted} 
+                            variant="ghost"
+                        >
+                            Send
+                        </Button>
+                    </div>
+                </div>
             </div>
         </div>
     );

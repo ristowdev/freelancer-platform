@@ -12,7 +12,7 @@ interface DashboardProps {
     searchParams: {
         search?: string;
         favorites?: string;
-        filter?: string;
+        filter?: string; 
     };
 };
 

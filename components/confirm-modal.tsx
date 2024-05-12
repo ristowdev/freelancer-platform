@@ -18,6 +18,7 @@ interface ConfirmModalProps {
     disabled?: boolean;
     header: string;
     description?: string;
+    confimText?: string;
 };
 
 export const ConfirmModal = ({

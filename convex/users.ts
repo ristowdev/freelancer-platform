@@ -53,7 +53,7 @@ export const getCurrentUser = query({
         const user = await ctx.db
             .query("users")
             .withIndex("by_token", (q) =>
-                q.eq("tokenIdentifier", identity.tokenIdentifier)
+                q.eq("tokenIdentifier", identity.subject)
             )
             .unique();
 
@@ -199,5 +199,29 @@ export const getCountryByUsername = query({
             throw new Error("Country not found");
         }
         return country;
+    },
+});
+
+
+
+export const create = internalMutation({
+    args: {
+        fullName: v.string(), 
+        tokenIdentifier: v.string(),  
+        username: v.string(),
+        profileImageUrl: v.string(), 
+    },
+    handler: async (ctx, args) => {
+
+        const userId = await ctx.db.insert("users", {
+            fullName: args.fullName,
+            tokenIdentifier: args.tokenIdentifier,
+            title: "",
+            about: "",
+            username: args.username,
+            profileImageUrl: args.profileImageUrl,
+        });
+           
+        return userId;
     },
 });
