@@ -17,6 +17,7 @@ export const createFile = mutation({
       type: v.string(),
       fileId: v.id("_storage"), 
       temporaryId: v.string(),
+      size: v.string(),
     },
     async handler(ctx, args) {
         const identity = await ctx.auth.getUserIdentity();
@@ -40,6 +41,7 @@ export const createFile = mutation({
         await ctx.db.insert("files", {
             name: args.name,
             type: args.type,
+            size: args.size,
             fileId: args.fileId,
             temporaryId: args.temporaryId,
             messageId: undefined,

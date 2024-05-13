@@ -188,7 +188,7 @@ export default defineSchema({
                 v.literal("onlyFiles"),
                 v.literal("messageWithFiles"),
             )
-        )
+        ),
     })
         .index('by_conversationId', ['conversationId'])
         .index('by_lastMessageUserId', ['lastMessageUserId']),
@@ -225,12 +225,20 @@ export default defineSchema({
     files: defineTable({
         name: v.string(),
         type: v.string(),
+        size: v.optional(v.string()),
         fileId: v.id("_storage"),
         temporaryId: v.string(),
         messageId: v.optional(v.id("messages")),
         userId: v.id("users"),
     })
         .index("by_temporaryId", ["temporaryId"]) 
+        .index("by_messageId", ["messageId"]) 
+        .index("by_user", ["userId"]),
+    messageReactions: defineTable({
+        reaction: v.string(),
+        messageId: v.optional(v.id("messages")),
+        userId: v.id("users"),
+    })
         .index("by_messageId", ["messageId"]) 
         .index("by_user", ["userId"]),
     

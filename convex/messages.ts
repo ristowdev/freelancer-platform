@@ -258,3 +258,66 @@ export const markReadUnRead = mutation({
         return true;
     },
 });
+
+export const reactToMessage = mutation({
+    args: { 
+        messageId: v.id("conversations"),
+        reaction: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+
+        if (!identity) {
+            throw new Error("Unauthorized");
+        }
+        
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_token", (q) =>
+                q.eq("tokenIdentifier", identity.subject)
+            )
+            .unique();
+
+        if (user === null) {
+            return;
+        }
+
+        // const messages = await ctx.db.query("messages")
+        //     .withIndex("by_conversationId", (q) =>
+        //         q.eq("conversationId", args.conversationId as Id<"conversations">)
+        //     )
+        //     .collect();
+
+        // const lastMessage = await ctx.db.query("messages")
+        //     .withIndex("by_conversationId", (q) =>
+        //         q.eq("conversationId", args.conversationId as Id<"conversations">)
+        //     )
+        //     .order("desc")
+        //     .first()
+
+        // if(args.type === "read"){
+        //     if(messages.length > 1){
+        //         const allMessages = messages.map(async (message: any) => {
+        //             await ctx.db.patch(message._id as Id<"messages">, {
+        //                 read: true
+        //             });
+        //         });
+        //         await Promise.all(allMessages);
+        //     }else{
+        //         if(lastMessage?.lastMessageUserId !== user._id){
+        //             await ctx.db.patch(lastMessage?._id as Id<"messages">, {
+        //                 read: true,
+        //             }); 
+        //         }
+        //     }
+        // }else{
+        //     if(lastMessage?.lastMessageUserId !== user._id){
+        //         await ctx.db.patch(lastMessage?._id as Id<"messages">, {
+        //             read: false,
+        //         }); 
+        //     }
+        // }
+ 
+        return true;
+    },
+});

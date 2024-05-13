@@ -10,6 +10,7 @@ import ListFiles from "./file-system/list-files";
 import { cn } from "@/lib/utils";
 import { useMutation } from "convex/react";
 import { generateTemporaryId } from "@/utils/temporary-id";
+import { formatFileSize } from "@/utils/format-file-size";
 
 interface FormProps {
     userId: Doc<"users">["_id"];
@@ -75,44 +76,42 @@ const Form = ({
                     const postUrl = await generateUploadUrl();
             
                     const promise = new Promise<void>((resolve, reject) => {
-                    const xhr = new XMLHttpRequest();
-                    xhr.upload.addEventListener('progress', (event) => {
-                        if (event.lengthComputable) {
-                        const uploadProgress = Math.round((event.loaded / event.total) * 100);
-                        setFilesUploadProgress(prevProgress => ({
-                            ...prevProgress,
-                            [i]: uploadProgress
-                        }));
-                        }
-                    });
-            
-                    xhr.open('POST', postUrl);
-                    xhr.setRequestHeader('Content-Type', file.type);
-                    xhr.onload = () => {
-                        if(xhr.status === 200){
-                            const response = JSON.parse(xhr.responseText);
-                            const storageId = response.storageId; 
-                            createFile({
-                                name: file.name,
-                                type: file.type,
-                                fileId: storageId,
-                                temporaryId,
-                            })
-                                .then(() => { 
-                                    resolve();
+                        const xhr = new XMLHttpRequest();
+                        xhr.upload.addEventListener('progress', (event) => {
+                            if (event.lengthComputable) {
+                                const uploadProgress = Math.round((event.loaded / event.total) * 100);
+                                setFilesUploadProgress(prevProgress => ({
+                                    ...prevProgress,
+                                    [i]: uploadProgress
+                                }));
+                            }
+                        });
+                        xhr.open('POST', postUrl);
+                        xhr.setRequestHeader('Content-Type', file.type);
+                        xhr.onload = () => {
+                            if(xhr.status === 200){
+                                const response = JSON.parse(xhr.responseText);
+                                const storageId = response.storageId; 
+                                createFile({
+                                    name: file.name,
+                                    type: file.type,
+                                    size: formatFileSize(file.size),
+                                    fileId: storageId,
+                                    temporaryId,
                                 })
-                                .catch((error) => {
-                                    console.error(error);
-                                });
-                        }else{
-                            reject(new Error('Error: Non-200 status code received'));
-                        }
-                        
-                    };
-                    xhr.onerror = (error) => reject(error);
-                    xhr.send(file);
+                                    .then(() => { 
+                                        resolve();
+                                    })
+                                    .catch((error) => {
+                                        console.error(error);
+                                    });
+                            }else{
+                                reject(new Error('Error: Non-200 status code received'));
+                            }
+                        };
+                        xhr.onerror = (error) => reject(error);
+                        xhr.send(file);
                     });
-            
                     uploadPromises.push(promise);
                 }
             
@@ -144,41 +143,7 @@ const Form = ({
                 
             }
         }
-    };
-    
-
-      
-    // const handleSubmit = async () => {
-    //     if (text === "" && !fileList) return;
-    //     if(fileList && fileList?.length > 0){
-    //         const postUrl = await generateUploadUrl();
-    //         const file = fileList[0];
-    //         const fileType = file.type;
-    //         uploadFile(file, postUrl)
-            
-    //         // const result = await fetch(postUrl, {
-    //         //     method: "POST",
-    //         //     headers: { "Content-Type": fileType },
-    //         //     body: file,
-    //         // });
-
-    //         // const { storageId } = await result.json();
-    //         // console.log(storageId)
-    //     }else{
-    //         mutate({
-    //             text: text,
-    //             userId,
-    //             seen: false,
-    //             conversationId,
-    //         })
-    //             .then(() => {
-    //                 setText("");
-    //             })
-    //             .catch((error) => {
-    //                 console.error(error);
-    //             });
-    //     }
-    // }
+    }; 
 
     const handleReadAllMessages = () => {
         if(unReadMessages > 0){
@@ -241,7 +206,6 @@ const Form = ({
                                 fileList && fileList?.length > 0 && "h-[190px]"
                             )
                         }>
-                            
                     <input
                         ref={inputRef}
                         placeholder={"Send message..."}
