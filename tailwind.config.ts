@@ -67,10 +67,17 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "fadeBackground": {
+          '0%': { backgroundColor: '#fff' },
+          '50%': { backgroundColor: '#efeff0' },
+          '100%': { backgroundColor: '#fff' },
+        },
+    
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "scroll-to-message": "fadeBackground 1s ease-out"
       },
       boxShadow:{
         'custom': '0 1.2px 1.92251px rgba(0,0,0,.02),0 2px 3.68135px rgba(0,0,0,.04),0 1px 5px rgba(0,0,0,.05)',

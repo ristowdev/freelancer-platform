@@ -8,16 +8,36 @@ import {
     TooltipTrigger,
   } from "@/components/ui/tooltip"
 import EmojiPicker from "emoji-picker-react";
+import { Doc } from '@/convex/_generated/dataModel';
+import { useApiMutation } from '@/hooks/use-api-mutation';
+import { api } from '@/convex/_generated/api';
 
 
 interface FormProps {
-    onEmojiSelect: (emoji: any) => void;
+    message: any;
 }
  
 const ReactionPickEmoji = ({
-    onEmojiSelect,
+    message
 }: FormProps) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
+
+    const {
+        mutate: reactToMessage
+    } = useApiMutation(api.messages.reactToMessage)
+
+    const onEmojiSelect = (emoji: any) => {
+        reactToMessage({
+            messageId: message._id,
+            reaction: emoji.emoji
+        })
+            .then(() => {
+                setIsOpen(false);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
     return(
         <>
             <div className="relative items-center flex">

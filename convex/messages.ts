@@ -16,9 +16,10 @@ export const send = mutation({
             v.literal("messageWithFiles"),
         ),
         temporaryId: v.optional(v.string()),
+        replayToMessageId: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
-        const { text, userId, imageUrl, seen, conversationId, type, temporaryId } = args;
+        const { text, userId, imageUrl, seen, conversationId, type, temporaryId, replayToMessageId } = args;
         // const message = text as string;
         // const fromUserId = userId;
         
@@ -32,7 +33,8 @@ export const send = mutation({
             read:false,
             playSound: true,
             conversationId,
-            type: type
+            type: type,
+            replayToMessageId: replayToMessageId !== "" ? replayToMessageId as Id<"messages"> : undefined
         });
 
 
@@ -261,7 +263,7 @@ export const markReadUnRead = mutation({
 
 export const reactToMessage = mutation({
     args: { 
-        messageId: v.id("conversations"),
+        messageId: v.id("messages"),
         reaction: v.string(),
     },
     handler: async (ctx, args) => {
@@ -282,41 +284,30 @@ export const reactToMessage = mutation({
             return;
         }
 
-        // const messages = await ctx.db.query("messages")
-        //     .withIndex("by_conversationId", (q) =>
-        //         q.eq("conversationId", args.conversationId as Id<"conversations">)
-        //     )
-        //     .collect();
+        const isReactionExist = await ctx.db
+            .query("messageReactions")
+                .filter((q) => q.and(
+                    q.eq(q.field("messageId"), args.messageId),
+                    q.eq(q.field("userId"), user._id)
+                ))
+                .unique();
 
-        // const lastMessage = await ctx.db.query("messages")
-        //     .withIndex("by_conversationId", (q) =>
-        //         q.eq("conversationId", args.conversationId as Id<"conversations">)
-        //     )
-        //     .order("desc")
-        //     .first()
-
-        // if(args.type === "read"){
-        //     if(messages.length > 1){
-        //         const allMessages = messages.map(async (message: any) => {
-        //             await ctx.db.patch(message._id as Id<"messages">, {
-        //                 read: true
-        //             });
-        //         });
-        //         await Promise.all(allMessages);
-        //     }else{
-        //         if(lastMessage?.lastMessageUserId !== user._id){
-        //             await ctx.db.patch(lastMessage?._id as Id<"messages">, {
-        //                 read: true,
-        //             }); 
-        //         }
-        //     }
-        // }else{
-        //     if(lastMessage?.lastMessageUserId !== user._id){
-        //         await ctx.db.patch(lastMessage?._id as Id<"messages">, {
-        //             read: false,
-        //         }); 
-        //     }
-        // }
+        
+        if(isReactionExist){
+            if(isReactionExist.reaction === args.reaction){
+                await ctx.db.delete(isReactionExist?._id);
+            }else{
+                await ctx.db.patch(isReactionExist._id as Id<"messageReactions">, {
+                    reaction: args.reaction
+                });
+            }
+        }else{
+            await ctx.db.insert("messageReactions", { 
+                reaction: args.reaction,
+                messageId: args.messageId,
+                userId: user._id
+            });
+        } 
  
         return true;
     },

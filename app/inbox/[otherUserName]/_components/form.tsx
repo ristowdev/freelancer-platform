@@ -11,11 +11,14 @@ import { cn } from "@/lib/utils";
 import { useMutation } from "convex/react";
 import { generateTemporaryId } from "@/utils/temporary-id";
 import { formatFileSize } from "@/utils/format-file-size";
+import { File, X } from "lucide-react";
 
 interface FormProps {
     userId: Doc<"users">["_id"];
     conversationId: Doc<"conversations">["_id"];
     unReadMessages: number;
+    onReplyToMessage: any;
+    cancleReplyToMessage: () => void;
 }
 
 interface UploadProgress {
@@ -26,6 +29,8 @@ const Form = ({
     userId,
     conversationId,
     unReadMessages,
+    onReplyToMessage,
+    cancleReplyToMessage
 }: FormProps) => {
     const [text, setText] = useState<string>("");
     const inputRef = useRef<HTMLInputElement>(null);
@@ -57,10 +62,14 @@ const Form = ({
                 userId,
                 seen: false,
                 conversationId,
-                type: "onlyMessage"
+                type: "onlyMessage",
+                replayToMessageId: onReplyToMessage ? onReplyToMessage._id : ""
             })
                 .then(() => {
                     setText("");
+                    if(onReplyToMessage){
+                        cancleReplyToMessage();
+                    }
                 })
                 .catch((error) => {
                     console.error(error);
@@ -124,12 +133,16 @@ const Form = ({
                         seen: false,
                         conversationId,
                         type: text ? "messageWithFiles" : "onlyFiles",
-                        temporaryId
+                        temporaryId,
+                        replayToMessageId: onReplyToMessage ? onReplyToMessage._id : ""
                     })
                         .then(() => {
                             setText("");
                             setFileList(null);
                             setIsSubmitted(false);
+                            if(onReplyToMessage){
+                                cancleReplyToMessage();
+                            }
                         })
                         .catch((error) => {
                             console.error(error);
@@ -198,72 +211,114 @@ const Form = ({
     };
 
     return (
-        <div className="pl-[24px] pr-[24px]" >
-            <div className="flex items-center gap-2 lg:gap-4 w-full flex-col">
-                <div className={
-                            cn(
-                                "relative w-full bg-white border border-[#e4e5e7] rounded-xl",
-                                fileList && fileList?.length > 0 && "h-[190px]"
-                            )
-                        }>
-                    <input
-                        ref={inputRef}
-                        placeholder={"Send message..."}
-                        className="text-black font-light py-2 px-4 bg-transparent w-full focus:outline-none h-[46px]"
-                        value={text}
-                        onChange={(e) => setText(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                e.preventDefault();
-                                handleSubmit();
-                            }
-                        }}
-                        onFocus={(e)=>{
-                            handleReadAllMessages()
-                        }}
-                    />
-                    {fileList && fileList?.length > 0 &&
-                        <>
-                            <div className="w-full flex pr-[25px] pl-[15px]">
-                                <div className="flex flex-1"></div>
-                                <span className="text-xs font-light text-[#95979d]">{fileList.length == 1 ? fileList.length+" File" : fileList.length+" Files"}</span>
-                            </div>
-                            <div className="bottom-0 left-0 w-full p-[15px] pt-0 mt-[10px] ">
-                                <div className="pt-[10px] pb-[15px] border-t border-[#dadbdd]">
-                                    <ListFiles 
-                                        fileList={fileList}
-                                        onRemoveFile={handleOnRemoveFile}
-                                        filesUploadProgress={filesUploadProgress}
-                                    />
+        <>
+            {onReplyToMessage && 
+                <div className="border-t border-[#e4e5e7] w-full">
+                    <div className="pl-[24px] pr-[24px] pt-[18px] pb-[24px]" >
+                        <div className="flex w-full">
+                            <div className="flex flex-1 flex-col">
+                                <div className="flex items-start">
+                                    <span className="text-sm font-normal text-[#404145]">Replying to</span>
+                                    <span className="text-sm font-semibold text-[#62646a] ml-[4px]">{onReplyToMessage?.user?._id === userId ? "your message" : onReplyToMessage?.user?.fullName}</span>
+                                </div>
+                                <div className="w-[60%]">
+                                    <p className="mt-[5px] font-normal text-sm text-[#74767e] line-clamp-1">
+                                        { 
+                                            onReplyToMessage?.type === "onlyMessage" ?    
+                                            onReplyToMessage?.text :
+                                            onReplyToMessage?.text === "" ?
+                                            onReplyToMessage?.files?.length === 1 ? "1 File" :
+                                            onReplyToMessage?.files?.length + " Files" :
+                                            onReplyToMessage?.text
+                                        }
+                                    </p>
                                 </div>
                             </div>
-                        </>
-                    }
-                </div>
-
-                <div className="w-full flex items-center">
-                    <div className="flex flex-1">
-                        <PickEmoji 
-                            onEmojiSelect={onEmojiSelect}
-                        />
-                        <FileUpload
-                            onFileSelect={onFileSelect}
-                        />
+                            <div className="flex">
+                                {onReplyToMessage?.type !== "onlyMessage" && <>
+                                    <div className="bg-[#fafafa] border solid border-[#e4e5e7] rounded-[4px] flex items-center justify-center w-[42px] h-[42px] mr-[10px]">
+                                        <File size={22} color="#74767e"/>
+                                    </div>
+                                </>}
+                                <Button 
+                                    variant="ghost"
+                                    className="hover:bg-transparent m-0 p-0 w-auto h-[25px]"
+                                    onClick={cancleReplyToMessage}
+                                >
+                                    <X size={22} color="#95979d"/>
+                                </Button>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <Button
-                            type="submit"
-                            className="hover:bg-transparent p-0 m-0 w-auto h-auto text-sm"
-                            onClick={handleSubmit}
-                            disabled={pending || isSubmitted} 
-                            variant="ghost"
-                        >
-                            Send
-                        </Button>
+                </div>
+            }
+            <div className="pl-[24px] pr-[24px]" >
+                <div className="flex items-center gap-2 lg:gap-4 w-full flex-col">
+                    <div className={
+                                cn(
+                                    "relative w-full bg-white border border-[#e4e5e7] rounded-xl",
+                                    fileList && fileList?.length > 0 && "h-[190px]"
+                                )
+                            }>
+                        <input
+                            ref={inputRef}
+                            placeholder={"Send message..."}
+                            className="text-black font-light py-2 px-4 bg-transparent w-full focus:outline-none h-[46px]"
+                            value={text}
+                            onChange={(e) => setText(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    handleSubmit();
+                                }
+                            }}
+                            onFocus={(e)=>{
+                                handleReadAllMessages()
+                            }}
+                        />
+                        {fileList && fileList?.length > 0 &&
+                            <>
+                                <div className="w-full flex pr-[25px] pl-[15px]">
+                                    <div className="flex flex-1"></div>
+                                    <span className="text-xs font-light text-[#95979d]">{fileList.length == 1 ? fileList.length+" File" : fileList.length+" Files"}</span>
+                                </div>
+                                <div className="bottom-0 left-0 w-full p-[15px] pt-0 mt-[10px] ">
+                                    <div className="pt-[10px] pb-[15px] border-t border-[#dadbdd]">
+                                        <ListFiles 
+                                            fileList={fileList}
+                                            onRemoveFile={handleOnRemoveFile}
+                                            filesUploadProgress={filesUploadProgress}
+                                        />
+                                    </div>
+                                </div>
+                            </>
+                        }
+                    </div>
+
+                    <div className="w-full flex items-center">
+                        <div className="flex flex-1">
+                            <PickEmoji 
+                                onEmojiSelect={onEmojiSelect}
+                            />
+                            <FileUpload
+                                onFileSelect={onFileSelect}
+                            />
+                        </div>
+                        <div>
+                            <Button
+                                type="submit"
+                                className="hover:bg-transparent p-0 m-0 w-auto h-auto text-sm"
+                                onClick={handleSubmit}
+                                disabled={pending || isSubmitted} 
+                                variant="ghost"
+                            >
+                                Send
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>    
     );
 }
 

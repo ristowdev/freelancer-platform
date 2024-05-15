@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Doc } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
-import { Download, MoreHorizontal, Reply, Smile } from "lucide-react";
+import { Download, File, MoreHorizontal, Reply, Smile } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -17,13 +17,22 @@ import {
   } from "@/components/ui/tooltip"
 import EmojiPicker from "emoji-picker-react";
 import ReactionPickEmoji from "./reaction-pick-emoji";
+import MessageReactionsModal from "./message-reactions-modal";
+import { FaReply } from "react-icons/fa";
 
 interface MessagesCardProps {
     message: any;
     userId: Doc<"users">["_id"];
+    onMessageReply: (message: any) => void;
+    scrollToMessage: (id: string) => void;
 }
 
-const MessageBox = ({message, userId}: MessagesCardProps) => {
+const MessageBox = ({
+    message, 
+    userId,
+    onMessageReply,
+    scrollToMessage
+}: MessagesCardProps) => {
 
     const isFileImage = (fileType: string): boolean => {
         return fileType.startsWith('image/');
@@ -47,27 +56,112 @@ const MessageBox = ({message, userId}: MessagesCardProps) => {
             console.error('Error downloading the file:', error);
         }
     };
+    console.log(message.messageReply)
 
     return (
         <>
-            <div className="flex w-[640px] pl-[24px] pr-[24px] mt-[0px] hover:bg-[#fafafa] pt-[20px] pb-[20px] group/message relative"
-            >
+            <div className="flex w-[640px] pl-[24px] pr-[24px] mt-[0px] hover:bg-[#fafafa] pt-[20px] pb-[20px] group/message relative">
                 <div className="mr-[10px]">
                     <Avatar className="w-[32px] h-[32px]">
                         <AvatarImage src={message.user.profileImageUrl} alt={message.user.username} />
                         <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
                 </div>
-                <div className="flex items-center flex-col">
-                    <div className="flex flex-col">
+                <div className="flex items-center flex-col w-full">
+                    <div className="flex flex-col w-full">
                         <div className="flex items-center mb-[10px]">
                             <span className="text-sm font-semibold">{message.userId === userId ? "Me" : message.user.fullName}</span>
                             <span className="text-xs ml-[5px] text-[#62646a]">{formatTime(message._creationTime)}</span>
                         </div>
+                        {message?.messageReply && <>
+                            <div className="flex flex-col w-full">
+                                <div className="flex items-center mb-[10px]">
+                                    <FaReply color="#74767e" size={12}/>
+                                    <span className="text-[#74767E] text-sm ml-[5px]">Replied</span>
+                                </div>
+                                <div 
+                                    className="w-full border-l-[3px] border-l-[#95979d] bg-[#fafafa] group-hover/message:bg-[#efeff0] rounded-[4px] mb-[15px] cursor-pointer"
+                                    onClick={()=>{scrollToMessage(message?.messageReply?._id)}}
+                                >
+                                    <div className="pl-[17px] pr-[12px] pt-[10px] pb-[10px]">
+                                        <div className="flex">
+                                            <div className="flex flex-1 flex-col">                   
+                                                <div className="flex items-center mb-[5px]">
+                                                    <span className="text-sm font-semibold text-[#95979d]">{message?.messageReply?.toUser?._id === userId ? "Me" : message?.messageReply?.toUser?.fullName}</span>
+                                                    <span className="text-xs ml-[5px] text-[#95979d]">{formatTime(message?.messageReply?._creationTime)}</span>
+                                                </div>
+                                                <div className="w-[65%]">
+                                                    <p className="text-sm text-[#95979d] font-normal line-clamp-1">
+                                                        { 
+                                                            message?.messageReply?.type === "onlyMessage" ?    
+                                                            message?.messageReply?.text :
+                                                            message?.messageReply?.text === "" ?
+                                                            message?.messageReply?.files?.length === 1 ? "1 File" :
+                                                            message?.messageReply?.files?.length + " Files" :
+                                                            message?.messageReply?.text
+                                                        }
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            {message?.messageReply?.type !== "onlyMessage" && <>
+                                                {message?.messageReply?.files?.length === 1 ? <>
+                                                    {isFileImage(message?.messageReply?.files[0]?.type) ? <>
+                                                        <div className="relative w-[45px] h-auto flex items-center justify-center">
+                                                            <div className="w-[45px] h-[45px] flex items-center justify-center rounded-[4px]">
+                                                                <Image
+                                                                    src={message?.messageReply?.files[0].url}
+                                                                    alt={message?.messageReply?.files[0].name}
+                                                                    width={45}
+                                                                    height={45}
+                                                                    objectPosition='start'
+                                                                    className='w-[45px] h-[45px] object-cover object-center rounded-[4px]'
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </> : <>
+                                                    
+                                                        <div className="relative w-[45px] h-auto flex items-center justify-center">
+                                                            <div className="w-[45px] h-[45px] flex items-center justify-center bg-[#ffffff] border solid border-[#e4e5e7] rounded-[4px]">
+                                                                <File size={22} color="#74767e"/>
+                                                            </div>
+                                                            <div className="w-[45px] h-[45px] bg-[#000000b3] rounded-[4px] flex items-center justify-center absolute top-0 left-0">
+                                                                <span className="text-base text-white">{`+1`}</span>
+                                                            </div>
+                                                        </div>
+                                                    </>}     
+                                            
+                                                </> : <>
+                                                    <div className="relative w-[45px] h-auto flex items-center justify-center">
+                                                        <div className="w-[45px] h-[45px] flex items-center justify-center bg-[#ffffff] border solid border-[#e4e5e7] rounded-[4px]">
+                                                            <File size={22} color="#74767e"/>
+                                                        </div>
+                                                        <div className="w-[45px] h-[45px] bg-[#000000b3] rounded-[4px] flex items-center justify-center absolute top-0 left-0">
+                                                            <span className="text-base text-white">{`+${message?.messageReply?.files?.length}`}</span>
+                                                        </div>
+                                                    </div>
+                                                </>}
+                                            </>}
+                                            {/* {((message?.messageReply?.type !== "onlyMessage") && (message?.messageReply?.files?.length > 0)) && 
+                                                (message?.messageReply?.files?.length === 1) ?
+                                                    <div className="">  
+                                                        {isFileImage(message?.messageReply?.files[0]?.type) ? <>img</> : <>No</>}
+                                                    </div>
+                                                :
+                                                    <div>
+    ne
+                                                    </div>
+                                            } */}
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </>}
                         {message.text !== "" &&
-                        <p className="text-sm text-[#62646a] leading-[1.6]">
-                            {message.text}
-                        </p>}
+                            <p className="text-sm text-[#62646a] leading-[1.6]">
+                                {message.text}
+                            </p>
+                        }
                         {(message.type === "onlyFiles" || message.type === "messageWithFiles") &&
                             <>
                                 {(message.text === "" && message?.files) &&
@@ -151,15 +245,40 @@ const MessageBox = ({message, userId}: MessagesCardProps) => {
                                 </div>
                             </>
                         }
+
+                        {message?.reactions && message?.reactions?.length > 0  &&
+                            <div className="flex">
+                                <MessageReactionsModal
+                                    message={message}
+                                    currentUserId={userId}
+                                >
+                                    <Button 
+                                        variant="ghost"
+                                        className="hover:bg-transparent m-0 p-0 w-auto h-auto flex items-start justify-start"
+                                    >
+                                        <div className="mt-[10px] border border-[#e4e4e4] rounded-[25px] flex bg-white pl-[10px] pr-[10px] items-center pt-[2px] pb-[2px] justify-center">
+                                            {message?.reactions?.map((reaction: any, index: number)=> (<>
+                                                <div className="flex items-center w-[13px] justify-center" key={index}>
+                                                    <span className={cn("text-[13px]", index+1 !== message?.reactions?.length && "mr-[5px]")}>{reaction.reaction}</span>
+                                                </div>
+                                            </>))}
+                                            {message?.reactions?.length > 1 &&
+                                                <div className="flex items-center ml-[5px] w-[5px]  justify-center ">
+                                                    <span className="text-[13px] font-light">{message?.reactions?.length}</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </Button>
+                                </MessageReactionsModal>
+                            </div>
+                        }
                     </div> 
                 </div>
 
                 <div className="group-hover/message:flex hidden top-0 right-0 mt-[20px] mr-[20px] absolute">
                     <div className="">
                         <ReactionPickEmoji 
-                            onEmojiSelect={(emoji)=>{
-                                console.log(emoji)
-                            }}
+                            message={message}
                         />
                     </div>
                     <div>
@@ -170,6 +289,7 @@ const MessageBox = ({message, userId}: MessagesCardProps) => {
                                         size="icon"
                                         variant="ghost"
                                         className="p-0 m-0 w-[32px] h-[32px] hover:bg-[#efeff0] rounded-full"
+                                        onClick={()=>{onMessageReply(message)}}
                                     >
                                         <Reply size={20} color="#74767e"/>
                                     </Button>

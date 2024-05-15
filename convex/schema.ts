@@ -189,6 +189,7 @@ export default defineSchema({
                 v.literal("messageWithFiles"),
             )
         ),
+        replayToMessageId: v.optional(v.id("messages")),
     })
         .index('by_conversationId', ['conversationId'])
         .index('by_lastMessageUserId', ['lastMessageUserId']),

@@ -116,11 +116,61 @@ export const getConversation = query({
             .collect();
 
         const messagesWithUsersRelation = messages.map(async (message: any) => {
+            let files: any = [];
+            let messageReply: any | null = null;
+
             const user = await ctx.db.query("users")
                 .filter((q: any) => q.eq(q.field("_id"), message.userId))
                 .unique();
 
-            let files: any = [];
+            const _reactions = await ctx.db.query("messageReactions")
+                .filter((q: any) => q.eq(q.field("messageId"), message._id))
+                .collect();
+
+            if(message.replayToMessageId){
+                messageReply = await ctx.db.query("messages")
+                    .filter((q: any) => q.eq(q.field("_id"), message.replayToMessageId as Id<"messages">))
+                    .unique();
+
+                const replyToUser = await ctx.db.query("users")
+                    .filter((q: any) => q.eq(q.field("_id"), messageReply.userId))
+                    .unique();
+                
+                const _files = await ctx.db.query("files")
+                    .withIndex("by_messageId", (q) => q.eq("messageId", messageReply._id))
+                    .collect();
+
+                
+                const filesWithStorageRelation = _files.map(async (file: any) => {
+                    const url = await ctx.storage.getUrl(file.fileId as Id<"_storage">);
+                    return {
+                        ...file,
+                        url
+                    }
+                });
+
+                files = await Promise.all(filesWithStorageRelation);
+
+                 
+                
+                messageReply.toUser = replyToUser;
+                messageReply.files = files;
+
+                // messageReply.push({user: messageReplyUser});
+            }
+            
+            const reactionsWithUserRelationPromise = _reactions.map(async (reaction: any) => { 
+                const user = await ctx.db.query("users")
+                    .filter((q: any) => q.eq(q.field("_id"), reaction.userId))
+                    .unique();
+                return {
+                    ...reaction,
+                    user
+                }
+            })
+
+            const reactions = await Promise.all(reactionsWithUserRelationPromise);
+
 
             if(message.type === "onlyFiles" || "messageWithFiles"){
                 const filesByMessageId = await ctx.db.query("files")
@@ -141,7 +191,9 @@ export const getConversation = query({
             return {
                 ...message,
                 user,
-                files
+                files,
+                reactions,
+                messageReply
             }
         });
 
