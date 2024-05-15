@@ -190,6 +190,7 @@ export default defineSchema({
             )
         ),
         replayToMessageId: v.optional(v.id("messages")),
+        reported: v.optional(v.boolean()),
     })
         .index('by_conversationId', ['conversationId'])
         .index('by_lastMessageUserId', ['lastMessageUserId']),
@@ -242,5 +243,21 @@ export default defineSchema({
     })
         .index("by_messageId", ["messageId"]) 
         .index("by_user", ["userId"]),
+
+    messagesReports: defineTable({
+        messageId: v.id("messages"),
+        reportedFromUserId: v.id("users"),
+        reportedUserId: v.id("users"),
+        type: v.union(
+            v.literal("outsite-platform-payment"),
+            v.literal("behaved-inappropriately"),
+            v.literal("spam"),
+            v.literal("other"),
+        ),
+        otherExplanation: v.optional(v.string()),
+    })
+        .index("by_messageId", ["messageId"]) 
+        .index("by_reportedUserId", ["reportedUserId"]) 
+        .index("by_reportedFromUserId", ["reportedFromUserId"]),
     
 });

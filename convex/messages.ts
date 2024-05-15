@@ -312,3 +312,61 @@ export const reactToMessage = mutation({
         return true;
     },
 });
+
+
+export const reportMessage = mutation({
+    args: { 
+        messageId: v.id("messages"),
+        reportedFromUserId: v.id("users"),
+        reportedUserId: v.id("users"),
+        type: v.union(
+            v.literal("outsite-platform-payment"),
+            v.literal("behaved-inappropriately"),
+            v.literal("spam"),
+            v.literal("other"),
+        ),
+        otherExplanation: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+
+        if (!identity) {
+            throw new Error("Unauthorized");
+        }
+        
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_token", (q) =>
+                q.eq("tokenIdentifier", identity.subject)
+            )
+            .unique();
+
+        if (user === null) {
+            return;
+        }
+
+        const message = await ctx.db.query("messages")
+            .filter((q) => q.and(
+                q.eq(q.field("_id"), args.messageId),
+            ))
+            .unique();
+        
+        if(!message){
+            return;
+        }
+
+        await ctx.db.insert("messagesReports", {
+            messageId: args.messageId,
+            otherExplanation: args.otherExplanation,
+            reportedFromUserId: args.reportedFromUserId,
+            reportedUserId: args.reportedUserId,
+            type: args.type
+        });
+
+        await ctx.db.patch(message._id as Id<"messages">, {
+            reported: true
+        }); 
+         
+        return true;
+    },
+});

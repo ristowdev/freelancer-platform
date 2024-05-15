@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Download, File, MoreHorizontal, Reply, Smile } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LuFileText } from "react-icons/lu";
 import {
     Tooltip,
@@ -19,6 +19,7 @@ import EmojiPicker from "emoji-picker-react";
 import ReactionPickEmoji from "./reaction-pick-emoji";
 import MessageReactionsModal from "./message-reactions-modal";
 import { FaReply } from "react-icons/fa";
+import ReportMessage from "./report-message";
 
 interface MessagesCardProps {
     message: any;
@@ -32,8 +33,7 @@ const MessageBox = ({
     userId,
     onMessageReply,
     scrollToMessage
-}: MessagesCardProps) => {
-
+}: MessagesCardProps) => { 
     const isFileImage = (fileType: string): boolean => {
         return fileType.startsWith('image/');
     }; 
@@ -57,10 +57,10 @@ const MessageBox = ({
         }
     };
     console.log(message.messageReply)
-
+ 
     return (
         <>
-            <div className="flex w-[640px] pl-[24px] pr-[24px] mt-[0px] hover:bg-[#fafafa] pt-[20px] pb-[20px] group/message relative">
+            <div className="flex w-[640px] pl-[24px] pr-[24px] mt-[0px] hover:bg-[#fafafa] pt-[20px] pb-[20px] group/message relative" >
                 <div className="mr-[10px]">
                     <Avatar className="w-[32px] h-[32px]">
                         <AvatarImage src={message.user.profileImageUrl} alt={message.user.username} />
@@ -140,17 +140,7 @@ const MessageBox = ({
                                                         </div>
                                                     </div>
                                                 </>}
-                                            </>}
-                                            {/* {((message?.messageReply?.type !== "onlyMessage") && (message?.messageReply?.files?.length > 0)) && 
-                                                (message?.messageReply?.files?.length === 1) ?
-                                                    <div className="">  
-                                                        {isFileImage(message?.messageReply?.files[0]?.type) ? <>img</> : <>No</>}
-                                                    </div>
-                                                :
-                                                    <div>
-    ne
-                                                    </div>
-                                            } */}
+                                            </>} 
                                         </div>
 
                                     </div>
@@ -275,7 +265,7 @@ const MessageBox = ({
                     </div> 
                 </div>
 
-                <div className="group-hover/message:flex hidden top-0 right-0 mt-[20px] mr-[20px] absolute">
+                <div className="group-hover/message:flex hidden top-0 right-0 mt-[20px] mr-[20px] absolute z-10">
                     <div className="">
                         <ReactionPickEmoji 
                             message={message}
@@ -300,24 +290,12 @@ const MessageBox = ({
                             </Tooltip>
                         </TooltipProvider>
                     </div>
-                    <div className="">
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button 
-                                        size="icon"
-                                        variant="ghost"
-                                        className="p-0 m-0 w-[32px] h-[32px] hover:bg-[#efeff0] rounded-full"
-                                    >
-                                        <MoreHorizontal size={20} color="#74767e"/>
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent className="bg-[#404145] h-[41px] rounded-[10px] flex items-center justify-center" side="bottom">
-                                    <p className="text-md font-normal text-white">More actions</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                    </div>
+                    {message.userId !== userId &&
+                            <ReportMessage 
+                                message={message}
+                                userId={userId}
+                            />
+                    }
                 </div>
             </div>
         </>
