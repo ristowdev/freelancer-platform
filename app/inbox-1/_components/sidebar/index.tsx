@@ -11,7 +11,7 @@ import { useSearchParams } from "next/navigation";
 const font = Poppins({
     subsets: ["latin"],
     weight: ["600"],
-})
+}) 
 
 interface SidebarProps {
     children: React.ReactNode;

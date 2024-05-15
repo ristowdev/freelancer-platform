@@ -7,7 +7,7 @@ export default function ConversationsLayout({
 }) {
     return (
         <> 
-            <div className="pl-[40px] pr-[40px] mt-[34px]">
+            <div className="pl-[40px] pr-[40px] pt-[24px]">
                 {children}
             </div>
         </>

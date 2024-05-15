@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Doc } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
-import { Download, File, MoreHorizontal, Reply, Smile } from "lucide-react";
+import { Download, File, Flag, MoreHorizontal, Reply, Smile } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -20,6 +20,7 @@ import ReactionPickEmoji from "./reaction-pick-emoji";
 import MessageReactionsModal from "./message-reactions-modal";
 import { FaReply } from "react-icons/fa";
 import ReportMessage from "./report-message";
+import { IoFlagSharp } from "react-icons/io5";
 
 interface MessagesCardProps {
     message: any;
@@ -60,18 +61,26 @@ const MessageBox = ({
  
     return (
         <>
-            <div className="flex w-[640px] pl-[24px] pr-[24px] mt-[0px] hover:bg-[#fafafa] pt-[20px] pb-[20px] group/message relative" >
-                <div className="mr-[10px]">
+            <div className="flex w-[80%] pl-[24px] pr-[24px] mt-[0px] hover:bg-[#fafafa] pt-[20px] pb-[20px] group/message relative" >
+                <div className="mr-[15px]">
                     <Avatar className="w-[32px] h-[32px]">
                         <AvatarImage src={message.user.profileImageUrl} alt={message.user.username} />
                         <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
                 </div>
-                <div className="flex items-center flex-col w-full">
+                <div className="flex items-center flex-col w-full ">
                     <div className="flex flex-col w-full">
-                        <div className="flex items-center mb-[10px]">
+                        <div className="flex items-center mb-[15px]">
                             <span className="text-sm font-semibold">{message.userId === userId ? "Me" : message.user.fullName}</span>
                             <span className="text-xs ml-[5px] text-[#62646a]">{formatTime(message._creationTime)}</span>
+                            {message.reported && 
+                                <div className="flex items-center ml-[10px]">
+                                    <div className="flex items-center mr-[5px]">
+                                        <IoFlagSharp size={16} color="#c43333" />
+                                    </div>
+                                    <span className="text-base text-[#c43333] font-light">Reported</span>
+                                </div>
+                            }
                         </div>
                         {message?.messageReply && <>
                             <div className="flex flex-col w-full">
@@ -83,9 +92,9 @@ const MessageBox = ({
                                     className="w-full border-l-[3px] border-l-[#95979d] bg-[#fafafa] group-hover/message:bg-[#efeff0] rounded-[4px] mb-[15px] cursor-pointer"
                                     onClick={()=>{scrollToMessage(message?.messageReply?._id)}}
                                 >
-                                    <div className="pl-[17px] pr-[12px] pt-[10px] pb-[10px]">
-                                        <div className="flex">
-                                            <div className="flex flex-1 flex-col">                   
+                                    <div className="pl-[17px] pr-[12px] pt-[10px] pb-[10px] w-[full]">
+                                        <div className="flex w-full">
+                                            <div className="flex flex-1 flex-col w-full">                   
                                                 <div className="flex items-center mb-[5px]">
                                                     <span className="text-sm font-semibold text-[#95979d]">{message?.messageReply?.toUser?._id === userId ? "Me" : message?.messageReply?.toUser?.fullName}</span>
                                                     <span className="text-xs ml-[5px] text-[#95979d]">{formatTime(message?.messageReply?._creationTime)}</span>
@@ -159,7 +168,7 @@ const MessageBox = ({
                                         {message?.files?.length === 1 ? "1 File" : message?.files?.length + " Files"}
                                     </p>
                                 }
-                                <div className="mt-[15px] flex">
+                                <div className="mt-[15px] grid grid-cols-[repeat(auto-fill,minmax(170px,0fr))] gap-4">
                                     {message?.files?.map((file: any, index: number)=> (
                                         <>
                                             {isFileImage(file.type) ? <>
@@ -265,7 +274,7 @@ const MessageBox = ({
                     </div> 
                 </div>
 
-                <div className="group-hover/message:flex hidden top-0 right-0 mt-[20px] mr-[20px] absolute z-10">
+                <div className="group-hover/message:flex hidden top-0 right-0 mt-[15px] mr-[20px] absolute z-10">
                     <div className="">
                         <ReactionPickEmoji 
                             message={message}

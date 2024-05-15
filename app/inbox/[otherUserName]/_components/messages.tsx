@@ -73,10 +73,11 @@ const Messages = ({
 
 
     return (
-        <ScrollArea className="w-full flex-col h-[330px]">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden">
+
             {messages.map((message, i) => (
-                <div key={message._id} id={`message-${message._id}`} className="w-fit relative">
-                    <div className={animate === message._id ? "animate-scroll-to-message absolute top-0 left-0 w-full h-full bg-white" : ""}></div>
+                <div key={message._id} id={`message-${message._id}`} className="w-full relative">
+                    <div className={animate === message._id ? "animate-scroll-to-message absolute top-0 left-0 w-[80%] h-full bg-white" : ""}></div>
                     <MessageBox 
                         message={message}
                         userId={userId}
@@ -86,7 +87,7 @@ const Messages = ({
                 </div>
             ))}
             <div className="" ref={bottomRef} />
-        </ScrollArea>
+        </div>
     );
 }
 

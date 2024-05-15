@@ -15,7 +15,7 @@ const ListFiles: React.FC<ListFilesProps> = ({ fileList, onRemoveFile, filesUplo
     <div className="w-full">
       {fileList && fileList.length > 0 && (
         <>
-         <div className="w-full flex flex-1 overflow-y-auto pb-[11px]">
+         <div className="w-full flex flex-1 overflow-y-auto pb-[0px]">
             {Array.from(fileList).map((file, index) => (
                 <>
                     <FileBox

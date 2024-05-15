@@ -51,11 +51,11 @@ const ConversationPage = ({
 
     return ( 
          <> 
-            <div className="w-full flex h-calc-80px overflow-hidden">
-                <div className="w-[21%] ">
+         <div className="w-full flex h-calc-80px overflow-hidden">
+                <div className="w-[22%] ">
                     <SideBar />
                 </div>
-                <div className="w-[59%] ml-[1%] mt-[10px]">
+                <div className="ml-[1%] mt-[10px] w-[58%]">
                     <MessagesCard
                         messages={conv.messagesWithUsersAndFiles}
                         userId={conversation.currentUser._id}
@@ -64,9 +64,9 @@ const ConversationPage = ({
                         otherUser={conv.otherUser}
 
                     />
-                </div>
+                    </div>
 
-                <div className="w-[21%] ml-[2%] mt-[10px]">
+                <div className="w-[20%] ml-[2%] mt-[10px]">
                     <ProjectDetailsCard />
                 </div>
             </div>
