@@ -2,8 +2,8 @@
 
 import { Doc } from "@/convex/_generated/dataModel";
 import Header from "./header";
-import Messages from "./messages";
-import Form from "./form";
+import Messages from "../messages";
+import Form from "../form";
 import { useState } from "react";
 
 interface MessagesCardProps {

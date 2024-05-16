@@ -4,7 +4,7 @@ import { api } from "@/convex/_generated/api";
 import { Doc } from "@/convex/_generated/dataModel";
 import { useApiMutation } from "@/hooks/use-api-mutation";
 import { useEffect, useRef, useState } from "react";
-import PickEmoji from "./pick-emoji";
+import PickEmoji from "./emoji-system/pick-emoji";
 import FileUpload from "./file-system/file-upload";
 import ListFiles from "./file-system/list-files";
 import { cn } from "@/lib/utils";

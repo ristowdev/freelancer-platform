@@ -16,10 +16,10 @@ import {
     TooltipTrigger,
   } from "@/components/ui/tooltip"
 import EmojiPicker from "emoji-picker-react";
-import ReactionPickEmoji from "./reaction-pick-emoji";
-import MessageReactionsModal from "./message-reactions-modal";
+import ReactionPickEmoji from "../emoji-system/reaction-pick-emoji";
+import MessageReactionsModal from "../reactions-system/message-reactions-modal";
 import { FaReply } from "react-icons/fa";
-import ReportMessage from "./report-message";
+import ReportMessage from "../report-message";
 import { IoFlagSharp } from "react-icons/io5";
 
 interface MessagesCardProps {
@@ -90,23 +90,50 @@ const MessageBox = ({
                             </div>
                             <div className="w-full bg-white min-h-[200px] border border-solid border-[#e4e5e7] rounded-[5px] mb-[20px]">
                                 <div className="flex p-[20px] w-full flex-col h-full">
-                                    <div className="flex flex-1 flex-col">
+                                    <div className="flex flex-1">
                                         <div className="flex flex-col">
-                                            <div className="flex w-[20%]">
+                                            <div className="flex w-[150px] flex-col">
                                                 <span className="text-sm font-semibold text-[#62646a]">Details</span>
                                             </div>
                                             <div className="mt-[5px]">
-                                                <span className="text-sm font-normal text-[#62646a]">Project</span>
-                                            </div>
+                                                <span className="text-sm font-normal text-[#62646a]">Project:</span>
+                                            </div> 
+                                            <div className="mt-[5px]">
+                                                <span className="text-sm font-normal text-[#62646a]">Price type:</span>
+                                            </div> 
+                                            <div className="mt-[5px]">
+                                                <span className="text-sm font-normal text-[#62646a]">{"You'll do for:"}</span>
+                                            </div> 
+                                            {/* <div className="mt-[5px]">
+                                                <span className="text-sm font-normal text-[#62646a]"></span>
+                                            </div>  */}
                                         </div>
-                                        <div className="ml-[30px]">
-                                            <Link
-                                                className=""
-                                                href=""
-                                            ></Link>
+                                        <div className="ml-[30px] w-full flex mt-[25px] flex-col items-end">
+                                            <div className="flex">
+                                                <Link
+                                                    className="text-sm underline h-fit text-[#62646a]"
+                                                    href={`/project-details/${proposal?.project?.slug}`}
+                                                >
+                                                    {proposal?.project?.title}
+                                                </Link>
+                                            </div> 
+                                            <div className="mt-[10px]">
+                                                <span className="text-sm font-normal text-[#62646a]">{proposal?.project?.priceType}</span>
+                                            </div> 
+                                            <div className="mt-[10px]">
+                                                <span className="text-sm font-normal text-[#62646a]">{`$${proposal?.hourlyRate}.00/${proposal?.project?.priceType === "Hourly" ? "hr" : ""}`}</span>
+                                            </div> 
+                                            {/* <div className="flex mt-[10px]">
+                                                <Link
+                                                    className="text-sm underline h-fit text-[#1dbf73]"
+                                                    href={`/project-details/${proposal?.project?.slug}`}
+                                                >
+                                                    View proposal
+                                                </Link>
+                                            </div>  */}
                                         </div>
                                     </div>
-                                    <div className="border-t border-[#e4e5e7] w-full pt-[10px] flex">
+                                    <div className="border-t border-[#e4e5e7] w-full pt-[10px] flex mt-[10px]">
                                         <div className="flex w-full">
                                             <p className="text-sm font-normal text-[#62646a] line-clamp-2">Cover letter: <br/>{proposal?.coverLetter} j eiowjo fiewjoi fjeowi jfoiew j eiowjo fiewjoi fjeowi jfoiew j eiowjo fiewjoi fjeowi jfoiew</p>
                                         </div>

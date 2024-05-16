@@ -1,8 +1,8 @@
 "use client";
 
 import SideBar from "../_components/side-bar";
-import MessagesCard from "./_components/messages-card";
-import ProjectDetailsCard from "./_components/project-details-card";
+import MessagesCard from "./_components/messages/messages-card";
+import ProjectDetailsCard from "./_components/project-details/project-details-card";
 
 
 import { Input } from "@/components/ui/input";
@@ -10,8 +10,8 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useCallback, useEffect, useState } from "react";
 import { Doc } from "@/convex/_generated/dataModel";
-import Header from "./_components/header";
-import MessageBox from "./_components/message-box";
+import Header from "./_components/messages/header";
+import MessageBox from "./_components/messages/message-box";
  
 interface FormProps {
     params: { otherUserName: string };
@@ -67,7 +67,9 @@ const ConversationPage = ({
                     </div>
 
                 <div className="w-[20%] ml-[2%] mt-[10px]">
-                    <ProjectDetailsCard />
+                    <ProjectDetailsCard 
+                        proposal={conv.proposal}
+                    />
                 </div>
             </div>
          </>

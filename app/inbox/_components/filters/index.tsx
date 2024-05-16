@@ -117,7 +117,7 @@ const SideBarWithFilters = ({
 
     return (
         <>
-            <div className="flex flex-col w-full">
+            <div className="flex flex-col w-full pt-[15px]">
                 <div className="p-[5px] pr-[20px]">
                     <div className="flex w-full items-center">
                         {!openSearch && 

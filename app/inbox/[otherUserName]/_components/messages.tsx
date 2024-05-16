@@ -3,7 +3,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { MessageWithUserType } from "@/types";
 import { MoreHorizontal } from "lucide-react";
-import MessageBox from "./message-box";
+import MessageBox from "./messages/message-box";
 import { useEffect, useRef, useState } from "react";
 import { Doc } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";

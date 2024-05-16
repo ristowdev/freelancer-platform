@@ -5,7 +5,7 @@ import { useApiMutation } from "@/hooks/use-api-mutation";
 import { useQuery } from "convex/react";
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { toast } from "sonner";
-import MoveConversationActions from "./move-conv-actions";
+import MoveConversationActions from "../actions/move-conv-actions";
 
 interface HeaderProps {
     otherUser: any;
