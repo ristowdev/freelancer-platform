@@ -17,11 +17,13 @@ import { useApiMutation } from "@/hooks/use-api-mutation";
 import { toast } from "sonner";
 import { FaRegStar } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
+import { isFileImage } from "@/utils/is-file-image";
 
 interface ConversationBoxProps {
     conversation: Doc<"conversations"> & { 
         message: any,
-        unReadMessages: number
+        unReadMessages: number,
+        files: any;
     };
     currentUser: Doc<"users">;
     filterMessages?: string;
@@ -77,6 +79,21 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
             })
     }  
 
+    const messageFormation = (message: any, files:any) => {
+        if(message.type !== "onlyMessage"){
+            if(message.type === "onlyFiles"){
+                if(files.length === 1){
+                    return isFileImage(files[0].type) ? "Sent a photo" : "Sent a file"
+                }else{
+                    return files.length + " files"
+                }
+            }else{
+                return message.text;
+            }
+        }else{
+            return message.text;
+        }
+    }
 
     return (
         <div
@@ -124,10 +141,11 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
                                     )
                                 }
                             >
+                                
                                 {
-                                   conversation?.message[0]?.lastMessageUserId == currentUser._id ? 
-                                   "Me: "+conversation?.message[0]?.text : 
-                                   conversation?.message[0]?.text
+                                   conversation?.message[0]?.lastMessageUserId == currentUser?._id ? 
+                                   "Me: " + messageFormation(conversation?.message[0], conversation?.files)! : 
+                                   messageFormation(conversation?.message[0], conversation?.files)!
                                 }
                             </p>
                         </div>

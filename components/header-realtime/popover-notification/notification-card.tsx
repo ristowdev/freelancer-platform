@@ -104,7 +104,7 @@ export const NotificationCard = ({
                 <div className="ml-[5px] flex flex-1 flex-col relative">
                     {/* {!read && <div className="absolute top-0 right-0 bg-red-600 w-[40px] h-[17px] flex rounded-[25px] items-center justify-center"><span className="text-xs text-white p-0 m-0 ">New</span></div> } */}
                     <span className="text-sm text-[#62646a] font-semibold">{title}</span>
-                    <p className="text-sm text-[#62646a] line-clamp-2">{description}</p>
+                    <p className="text-sm text-[#62646a] line-clamp-2 min-h-[30px]">{description}</p>
                     <span className="text-xs text-[#676767] mt-[5px]">{calculateElapsedTime(when)}</span>
                 </div>
                 <div className="w-[63px] flex items-end justify-end pr-[10px]">

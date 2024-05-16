@@ -191,15 +191,18 @@ export default defineSchema({
         ),
         replayToMessageId: v.optional(v.id("messages")),
         reported: v.optional(v.boolean()),
+        firstMessage: v.optional(v.boolean()),
     })
         .index('by_conversationId', ['conversationId'])
         .index('by_lastMessageUserId', ['lastMessageUserId']),
     conversations: defineTable({
         participantOneId: v.id("users"),
         participantTwoId: v.id("users"),
+        proposalId: v.optional(v.id("proposals")),
     })
         .index('by_participantOneId', ['participantOneId', 'participantTwoId'])
-        .index('by_participantTwoId', ['participantTwoId', 'participantOneId']),
+        .index('by_participantTwoId', ['participantTwoId', 'participantOneId'])
+        .index('by_porposalId', ['proposalId']),
     conversationBelongsTo: defineTable({
         userId: v.id("users"),
         conversationId: v.id("conversations"),

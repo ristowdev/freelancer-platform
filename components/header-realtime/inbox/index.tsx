@@ -11,6 +11,7 @@ import { useApiMutation } from '@/hooks/use-api-mutation';
 import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { usePathname } from 'next/navigation';
+import { isFileImage } from '@/utils/is-file-image';
 
 const InboxNotifications = () => { 
 
@@ -97,47 +98,63 @@ const InboxNotifications = () => {
     if (conversations === undefined || currentUser === undefined) {
         return <RenderSkeleton />
     }
-  return (
-    <> 
-        <IconWithNewData newData={newData}>
-            <PopoverContext 
-                title='Messages'
-                icon={<Mail color='#404145' size={16}/>}
-                unreadNumber={unreadCount}
-                popoverIcon={<Mail size={20} color='#74767e'/>}
-                notifications={conversations.map((conversation, index)=> (<>
-                    <NotificationCard
-                        key={index}
-                        id={conversation._id}
-                        title={conversation?.sender?.fullName+" @"+conversation?.sender?.username}
-                        description={
-                            conversation?.message[0]?.lastMessageUserId == currentUser?._id ? 
-                            "Me: "+conversation?.message[0]?.text! : 
-                            conversation?.message[0]?.text!
-                        }
-                        when={conversation?.message[0]?._creationTime!}
-                        markReadUnRead={markReadUnRead}
-                        read={
-                            conversation?.message[0]?.lastMessageUserId === currentUser?._id ? 
-                            true :
-                            conversation?.message[0]?.read!
-                        }
-                        avatar={
-                            <Avatar className="w-[60px] h-[60px] bg-green-800 flex items-center justify-center mr-[7px]">
-                                <AvatarImage src={conversation?.sender?.profileImageUrl} />
-                                <AvatarFallback className="text-sm text-white">{conversation?.sender?.fullName[0]}</AvatarFallback>
-                            </Avatar>
-                        }
-                        onClickRedirect={`/inbox/${conversation?.sender?.username}`}
-                        lastMessageUserId={conversation?.message[0]?.lastMessageUserId}
-                        currentUserId={currentUser?._id}
-                        unReadMessages={conversation?.unReadMessages}
-                    />
-                </>))}
-            /> 
-        </IconWithNewData>
-    </>
 
-  );
+    const messageFormation = (message: any, files:any) => {
+        if(message.type !== "onlyMessage"){
+            if(message.type === "onlyFiles"){
+                if(files.length === 1){
+                    return isFileImage(files[0].type) ? "Sent a photo" : "Sent a file"
+                }else{
+                    return files.length + " files"
+                }
+            }else{
+                return message.text;
+            }
+        }else{
+            return message.text;
+        }
+    }
+    return (
+        <> 
+            <IconWithNewData newData={newData}>
+                <PopoverContext 
+                    title='Messages'
+                    icon={<Mail color='#404145' size={16}/>}
+                    unreadNumber={unreadCount}
+                    popoverIcon={<Mail size={20} color='#74767e'/>}
+                    notifications={conversations.map((conversation, index)=> (<>
+                        <NotificationCard
+                            key={index}
+                            id={conversation._id}
+                            title={conversation?.sender?.fullName+" @"+conversation?.sender?.username}
+                            description={
+                                conversation?.message[0]?.lastMessageUserId == currentUser?._id ? 
+                                "Me: " + messageFormation(conversation?.message[0], conversation?.files)! : 
+                                messageFormation(conversation?.message[0], conversation?.files)!
+                            }
+                            when={conversation?.message[0]?._creationTime!}
+                            markReadUnRead={markReadUnRead}
+                            read={
+                                conversation?.message[0]?.lastMessageUserId === currentUser?._id ? 
+                                true :
+                                conversation?.message[0]?.read!
+                            }
+                            avatar={
+                                <Avatar className="w-[60px] h-[60px] bg-green-800 flex items-center justify-center mr-[7px]">
+                                    <AvatarImage src={conversation?.sender?.profileImageUrl} />
+                                    <AvatarFallback className="text-sm text-white">{conversation?.sender?.fullName[0]}</AvatarFallback>
+                                </Avatar>
+                            }
+                            onClickRedirect={`/inbox/${conversation?.sender?.username}`}
+                            lastMessageUserId={conversation?.message[0]?.lastMessageUserId}
+                            currentUserId={currentUser?._id}
+                            unReadMessages={conversation?.unReadMessages}
+                        />
+                    </>))}
+                /> 
+            </IconWithNewData>
+        </>
+
+    );
 };
 export default InboxNotifications;

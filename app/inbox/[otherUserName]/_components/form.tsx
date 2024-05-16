@@ -73,6 +73,9 @@ const Form = ({
                     if(onReplyToMessage){
                         cancleReplyToMessage();
                     }
+                    if (inputRef.current) {
+                        inputRef.current.style.height = '46px';
+                    }
                 })
                 .catch((error) => {
                     console.error(error);
@@ -145,6 +148,9 @@ const Form = ({
                             setIsSubmitted(false);
                             if(onReplyToMessage){
                                 cancleReplyToMessage();
+                            }
+                            if (inputRef.current) {
+                                inputRef.current.style.height = '46px';
                             }
                         })
                         .catch((error) => {

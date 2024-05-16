@@ -27,13 +27,15 @@ interface MessagesCardProps {
     userId: Doc<"users">["_id"];
     onMessageReply: (message: any) => void;
     scrollToMessage: (id: string) => void;
+    proposal: any;
 }
 
 const MessageBox = ({
     message, 
     userId,
     onMessageReply,
-    scrollToMessage
+    scrollToMessage,
+    proposal
 }: MessagesCardProps) => { 
     const isFileImage = (fileType: string): boolean => {
         return fileType.startsWith('image/');
@@ -82,6 +84,36 @@ const MessageBox = ({
                                 </div>
                             }
                         </div>
+                        {message?.firstMessage && message?.firstMessage === true && <>
+                            <div className="mb-[10px] ">
+                                <span className="text-sm text-[#62646a] font-normal">Proposal Request Accepted</span>
+                            </div>
+                            <div className="w-full bg-white min-h-[200px] border border-solid border-[#e4e5e7] rounded-[5px] mb-[20px]">
+                                <div className="flex p-[20px] w-full flex-col h-full">
+                                    <div className="flex flex-1 flex-col">
+                                        <div className="flex flex-col">
+                                            <div className="flex w-[20%]">
+                                                <span className="text-sm font-semibold text-[#62646a]">Details</span>
+                                            </div>
+                                            <div className="mt-[5px]">
+                                                <span className="text-sm font-normal text-[#62646a]">Project</span>
+                                            </div>
+                                        </div>
+                                        <div className="ml-[30px]">
+                                            <Link
+                                                className=""
+                                                href=""
+                                            ></Link>
+                                        </div>
+                                    </div>
+                                    <div className="border-t border-[#e4e5e7] w-full pt-[10px] flex">
+                                        <div className="flex w-full">
+                                            <p className="text-sm font-normal text-[#62646a] line-clamp-2">Cover letter: <br/>{proposal?.coverLetter} j eiowjo fiewjoi fjeowi jfoiew j eiowjo fiewjoi fjeowi jfoiew j eiowjo fiewjoi fjeowi jfoiew</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </>}
                         {message?.messageReply && <>
                             <div className="flex flex-col w-full">
                                 <div className="flex items-center mb-[10px]">

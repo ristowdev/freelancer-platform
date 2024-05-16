@@ -12,6 +12,7 @@ interface MessagesCardProps {
     conversationId: Doc<"conversations">["_id"];
     unReadMessages: number;
     otherUser: any; 
+    proposal: any; 
 }
 
 const MessagesCard = ({
@@ -19,7 +20,8 @@ const MessagesCard = ({
     userId,
     conversationId,
     unReadMessages,
-    otherUser
+    otherUser,
+    proposal
 }: MessagesCardProps) => {
     const [replyToMessage, setReplyToMessage] = useState<any | null>(null);
     const onMessageReply = (message: any) => {
@@ -46,11 +48,12 @@ const MessagesCard = ({
                     otherUser={otherUser} 
                     conversationId={conversationId}
                 />
-                <div className="mt-[100px] flex flex-col min-h-0 h-fit overflow-hidden w-full">
+                <div className="mt-[100px] flex flex-col min-h-0 h-full overflow-hidden w-full">
                     <Messages 
                         messages={messages}
                         userId={userId}
                         onMessageReply={onMessageReply}
+                        proposal={proposal}
                     />
                 </div>
                 <div className="mt-[20px] pb-[30px]">

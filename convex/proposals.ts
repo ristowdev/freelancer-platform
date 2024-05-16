@@ -326,6 +326,7 @@ export const acceptProposalClient = mutation({
         const conversationId = await ctx.db.insert("conversations", {
             participantOneId: acceptProposal.userId,
             participantTwoId: acceptProposal.clientId,
+            proposalId: args.id
         });
 
         const message = `Hello ${proposalOwnerUser?.fullName}. Thank you for your interest in our project. We are eager to discuss the details with you. Please feel free to ask any questions you may have so that we can get started on this project promptly.`;
@@ -337,8 +338,10 @@ export const acceptProposalClient = mutation({
             read: false,
             isNew: true,
             conversationId,
-            playSound:false,
-            lastMessageUserId: acceptProposal.clientId
+            playSound: false,
+            lastMessageUserId: acceptProposal.clientId,
+            type: "onlyMessage",
+            firstMessage: true,
         });
 
         await ctx.scheduler.runAfter(5000, internal.proposals.updateIsNewMessage, {

@@ -41,6 +41,10 @@ export const getByUser = query({
                 .order("desc")
                 .take(1);
 
+            const files = await ctx.db.query("files")
+                .withIndex("by_messageId", (q) => q.eq("messageId", message[0]._id as Id<"messages">))
+                .collect();
+
             const sender = await ctx.db.query("users")
                 .filter((q) => q.eq(q.field("_id"), conversation.participantTwoId))
                 .unique();
@@ -59,6 +63,7 @@ export const getByUser = query({
                 message,
                 sender,
                 unReadMessages: unReadMessages.length,
+                files
             };
         }));
 
@@ -207,13 +212,29 @@ export const getConversation = query({
                 ))
                 .order("desc")
                 .collect();
+        
+        const proposal = await ctx.db.query("proposals")
+            .filter((q) => q.and(
+                q.eq(q.field("_id"), conversation?.proposalId), 
+            ))
+            .unique();
+        
+        const project = await ctx.db.query("projects")
+            .filter((q) => q.and(
+                q.eq(q.field("_id"), proposal?.projectId), 
+            ))
+            .unique();
 
         return {
             currentUser,
             otherUser,
             conversation,
             messagesWithUsersAndFiles,
-            unReadMessages: unReadMessages.length
+            unReadMessages: unReadMessages.length,
+            proposal: {
+                ...proposal,
+                project
+            }
         };
     }
 });
@@ -304,7 +325,7 @@ export const getOrCreateConversation = mutation({
 export const getConversations = query({
     handler: async (ctx) => {
         const identity = await ctx.auth.getUserIdentity();
-
+ 
         if (!identity) {
             throw new Error("Unauthorized");
         }
@@ -338,11 +359,15 @@ export const getConversations = query({
          
         const conversationsWithMessages = await Promise.all(conversations.map(async (conversation) => {
            
-            
+
             const message = await ctx.db.query("messages")
                 .filter((q) => q.eq(q.field("conversationId"), conversation._id))
                 .order("desc")
-                .take(1);
+                .take(1); 
+
+            const files = await ctx.db.query("files")
+                    .withIndex("by_messageId", (q) => q.eq("messageId", message[0]._id as Id<"messages">))
+                    .collect();
 
             const sender = await ctx.db.query("users")
                 .filter((q) => q.eq(q.field("_id"), conversation.participantTwoId))
@@ -360,7 +385,8 @@ export const getConversations = query({
                 ...conversation,
                 message,
                 sender,
-                unReadMessages: unReadMessages.length
+                unReadMessages: unReadMessages.length,
+                files
             };
         }));
 

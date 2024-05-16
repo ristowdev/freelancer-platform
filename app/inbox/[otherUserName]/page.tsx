@@ -62,7 +62,7 @@ const ConversationPage = ({
                         conversationId={conversation.conversation._id}
                         unReadMessages={conv.unReadMessages}
                         otherUser={conv.otherUser}
-
+                        proposal={conv.proposal}
                     />
                     </div>
 
