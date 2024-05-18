@@ -18,12 +18,14 @@ import { cn } from '@/lib/utils';
 
 interface HeaderPropos { 
   hasCategories?: boolean;
+  fixed?: boolean;
   customContainer?: string;
 };
 
 const Header = ({
     hasCategories = true,
-    customContainer
+    customContainer,
+    fixed
 }: HeaderPropos) => {
   const router = useRouter();
   console.log("containre - "+customContainer)
@@ -32,15 +34,18 @@ const Header = ({
      <header 
         className={
           cn(
-            'h-20 flex items-center justify-center',
+            'h-20 flex items-center justify-center bg-white',
             customContainer,
-            !hasCategories && 'border-b border-[#e4e5e7]'
+            !hasCategories && 'border-b border-[#e4e5e7]',
+            fixed && 'fixed top-0 w-full z-50'
           )
         }
      >
         <div className='flex flex-1 items-center'>
-          <div className='px-1'> 
-            <span className='text-2xl'>RiseUpGram</span>
+          <div className='px-1'>
+            <Link href="/">
+              <span className='text-2xl'>RiseUpGram</span>
+            </Link>
           </div>
           <div 
             className={
@@ -77,7 +82,7 @@ const Header = ({
             <Button variant="ghost" size="icon" className="rounded-full" onClick={()=>{router.push('/favorites')}}><Heart size={20} color='#74767e'/></Button>
           </div>
           <div className='mr-[30px]'>
-            <Link href="/proposals" className='text-base text-[#74767e] hover:text-[#1dbf73] font-semibold hover:underline'>Proposals</Link>
+            <Link href="/dashboard" className='text-base text-[#74767e] hover:text-[#1dbf73] font-semibold hover:underline'>Dashboard</Link>
           </div>
           <UserButton />
         </SignedIn>

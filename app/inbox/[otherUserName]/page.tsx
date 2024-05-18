@@ -12,6 +12,8 @@ import { useCallback, useEffect, useState } from "react";
 import { Doc } from "@/convex/_generated/dataModel";
 import Header from "./_components/messages/header";
 import MessageBox from "./_components/messages/message-box";
+import Milestone from "./_components/milestone";
+import Card from "./_components/milestone/_components/card";
  
 interface FormProps {
     params: { otherUserName: string };
@@ -67,9 +69,19 @@ const ConversationPage = ({
                     </div>
 
                 <div className="w-[20%] ml-[2%] mt-[10px]">
-                    <ProjectDetailsCard 
-                        proposal={conv.proposal}
-                    />
+                    <div className="h-full flex flex-col">
+                        <div className="h-full">
+                            <div className="flex flex-col h-full">
+                                <ProjectDetailsCard 
+                                    proposal={conv.proposal}
+                                />
+
+                                <div className="flex-1 h-full flex border-t border-[#e4e5e7] mt-[20px] pt-[15px] flex-col overflow-hidden">
+                                    <Milestone />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
          </>

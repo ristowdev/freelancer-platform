@@ -1,4 +1,4 @@
-import Navbar from "../(dashboard)/_components/navbar";
+import Navbar from "../(dashboardd)/_components/navbar";
 
 interface UserGigLayoutProps {
     children: React.ReactNode;

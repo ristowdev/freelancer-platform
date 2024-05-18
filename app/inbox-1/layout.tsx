@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import Navbar from "../(dashboard)/_components/navbar";
+import Navbar from "../(dashboardd)/_components/navbar";
 import { Sidebar } from "./_components/sidebar";
 import { api } from "@/convex/_generated/api";
 import ConversationList from "./_components/sidebar/conversation-list";
