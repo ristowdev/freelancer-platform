@@ -26,6 +26,7 @@ const ConversationPage = ({
     const [conversation, setConversation] = useState<Doc<"conversations"> | null>(null);
 
     const get = useMutation(api.conversations.getOrCreateConversation);
+    const user = useQuery(api.users.getCurrentUser);
     const conv = useQuery(api.conversations.getConversation, { username: params.otherUserName });
     useEffect(() => {
         const callMutation = async () => {
@@ -65,6 +66,7 @@ const ConversationPage = ({
                         unReadMessages={conv.unReadMessages}
                         otherUser={conv.otherUser}
                         proposal={conv.proposal}
+                        user={user}
                     />
                     </div>
 

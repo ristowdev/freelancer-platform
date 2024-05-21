@@ -14,6 +14,13 @@ export default defineSchema({
         customTag: v.optional(v.string()),
         stripeAccountId: v.optional(v.string()),
         stripeAccountSetupComplete: v.optional(v.boolean()),
+        role:v.optional(
+            v.union(
+                v.literal("freelancer"),
+                v.literal("client"),
+                v.literal("admin"),
+            )
+        )
     })
         .index("by_token", ["tokenIdentifier"]) // by clerk id
         .index("by_username", ["username"]),

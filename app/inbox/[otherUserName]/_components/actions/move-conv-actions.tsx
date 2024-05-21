@@ -5,7 +5,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Archive, MailWarning, MessagesSquare, MoreHorizontal } from "lucide-react";
+import { Archive, MailWarning, MessagesSquare, Milestone, MoreHorizontal } from "lucide-react";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { useApiMutation } from "@/hooks/use-api-mutation";
@@ -17,12 +17,16 @@ interface MoveConversationActionsProps {
     favorite: any;
     belongsTo: any;
     conversationId: string;
+    user: any;
+    proposal: any;
 }
 
 const MoveConversationActions = ({
     favorite, 
     belongsTo,
     conversationId,
+    user,
+    proposal
 }: MoveConversationActionsProps) => {
     const {
         mutate: _moveBelongsTo,
@@ -131,6 +135,21 @@ const MoveConversationActions = ({
                                     <FaStar size={16} color="black" />
                                 </div>
                                 <span className="text-base">Add to favorites</span>
+                            </div>
+                        </DropdownMenuItem>
+                    }
+                    {user?.role === "client" &&  
+                        <DropdownMenuItem
+                            className="h-[40px] pl-[10px] pr-[10px]"
+                            onClick={()=>{
+                                router.push(`/client-dashboard/projects/${proposal.projectId}/milestones/create?proposalId=${proposal._id}`)
+                            }}
+                        >
+                            <div className="flex items-center">
+                                <div className="flex items-center mr-[10px]">
+                                    <Milestone size={16} color="black" />
+                                </div>
+                                <span className="text-base">Create milestone</span>
                             </div>
                         </DropdownMenuItem>
                     }

@@ -10,9 +10,10 @@ export default function FooterWithVals() {
   // Check if the current route is '/inbox' or starts with '/inbox/'
   const isInboxPage = pathname.startsWith('/inbox');
   const isDashboard = pathname.startsWith('/dashboard');
+  const isClientDashboard = pathname.startsWith('/client-dashboard');
   
   // const hasCategories = !isInboxPage;
-  const includeFooter = !(isInboxPage || isDashboard);
+  const includeFooter = !(isInboxPage || isDashboard || isClientDashboard);
 
 
 

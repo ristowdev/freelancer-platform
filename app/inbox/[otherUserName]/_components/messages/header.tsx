@@ -10,11 +10,15 @@ import MoveConversationActions from "../actions/move-conv-actions";
 interface HeaderProps {
     otherUser: any;
     conversationId: string;
+    user: any;
+    proposal: any;
 }
 
 const Header = ({
     otherUser,
     conversationId,
+    user,
+    proposal
 }: HeaderProps) => {  
     const favoriteConversation = useQuery(api.conversations.getFavoriteConversation, { conversationId: conversationId as string })
     const converstionBelongsTo = useQuery(api.conversations.getSingleConvBelongsTo, { conversationId: conversationId as string })
@@ -103,6 +107,8 @@ const Header = ({
                             favorite={favoriteConversation}
                             belongsTo={converstionBelongsTo}
                             conversationId={conversationId}
+                            user={user}
+                            proposal={proposal}
                         />
 
                     </div>

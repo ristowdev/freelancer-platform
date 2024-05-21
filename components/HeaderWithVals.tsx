@@ -7,20 +7,19 @@ export default function HeaderWithVals() {
 
   const pathname = usePathname()
 
-  // Check if the current route is '/inbox' or starts with '/inbox/'
   const isInboxPage = pathname.startsWith('/inbox');
   const isDashboard = pathname.startsWith('/dashboard');
+  const isClientDashboard = pathname.startsWith('/client-dashboard');
   
-  // const hasCategories = !isInboxPage;
-  const hasCategories = !(isInboxPage || isDashboard);
-  const container = isInboxPage || isDashboard;
+  const hasCategories = !(isInboxPage || isDashboard || isClientDashboard);
+  const container = isInboxPage || isDashboard || isClientDashboard;
 
 
   return (
     <Header 
         hasCategories={hasCategories}
         customContainer={`${container ? "pl-[40px] pr-[40px]" : "container mx-auto"}`}
-        fixed={isDashboard}
+        fixed={isDashboard || isClientDashboard}
     />      
   );
 }

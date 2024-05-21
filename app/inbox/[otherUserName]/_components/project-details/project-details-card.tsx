@@ -24,7 +24,7 @@ const ProjectDetailsCard = ({proposal}: ProjectDetailsCardProps) => {
     const [isOpen, setIsOpen] = useState<boolean>(true);
 
     return (
-        <> 
+        <>  
             <div className="pt-[15px] w-full">
 
                 <Collapsible defaultOpen={isOpen} onOpenChange={(o)=>{setIsOpen(o)}} open={isOpen}>

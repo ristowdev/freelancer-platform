@@ -359,10 +359,10 @@ const MessageBox = ({
                         </TooltipProvider>
                     </div>
                     {message.userId !== userId &&
-                            <ReportMessage 
-                                message={message}
-                                userId={userId}
-                            />
+                        <ReportMessage 
+                            message={message}
+                            userId={userId}
+                        />
                     }
                 </div>
             </div>
