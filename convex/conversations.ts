@@ -224,6 +224,17 @@ export const getConversation = query({
                 q.eq(q.field("_id"), proposal?.projectId), 
             ))
             .unique();
+        
+        if(!proposal){
+            throw new Error("Couldn't find proposal");
+        }
+
+        const work = await ctx.db
+            .query("works")
+            .withIndex("by_proposalId", (q) => 
+                q.eq("proposalId", proposal._id)
+            )
+            .unique();
 
         return {
             currentUser,
@@ -234,7 +245,8 @@ export const getConversation = query({
             proposal: {
                 ...proposal,
                 project
-            }
+            },
+            work
         };
     }
 });

@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
 import { api } from "@/convex/_generated/api"
-import { useQuery } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 import { useState } from "react"
 import { Doc, Id } from "@/convex/_generated/dataModel"
 import { useApiMutation } from "@/hooks/use-api-mutation"
@@ -24,8 +24,13 @@ import { CalendarIcon } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import TasksCRUD from "./tasks/CRUD"
+import FileUpload from "./files/file-upload"
+import ListFiles from "./files/list-files"
+import { generateTemporaryId } from "@/utils/temporary-id" 
+import { formatFileSize } from "@/utils/format-file-size" 
 
 interface CreateFormProps {
+    workId: Id<"works">; 
 }
 
 const TaskSchema = z.object({
@@ -60,19 +65,35 @@ const CreateFormSchema = z.object({
 
 type CreateFormValues = z.infer<typeof CreateFormSchema>
 
+
+interface UploadProgress {
+    [key: number]: number;  
+}
 // This can come from your database or API.
 const defaultValues: Partial<CreateFormValues> = {
     title: "",
 }
 
 export const CreateForm = ({
-}: CreateFormProps) => {
-    const categories = useQuery(api.categories.get);
-    // const [subcategories, setSubcategories] = useState<Doc<"subcategories">[]>([]);
+    workId
+}: CreateFormProps) => { 
+
+    const [fileList, setFileList] = useState<FileList | null>(null);
+    const [filesUploadProgress, setFilesUploadProgress] = useState<UploadProgress>({});
+    const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+
+    const generateUploadUrl = useMutation(api.milestones.generateUploadUrl);
+    
     const {
         mutate,
         pending
-    } = useApiMutation(api.projects.create);
+    } = useApiMutation(api.milestones.create);
+
+
+    const {
+        mutate: createFile,
+    } = useApiMutation(api.milestones.createFile);
+
     const router = useRouter();
 
     const form = useForm<CreateFormValues>({
@@ -97,31 +118,136 @@ export const CreateForm = ({
             .replace(/-+$/, '');        // Trim - from end of text
     }
 
-    function onSubmit(data: CreateFormValues) {
-        console.log(data)
-        // const tags = data.tags.split(',').map(tag => tag.trim());
-        // const slug = slugify(data.title);
-        // mutate({ 
-        //     title: data.title,
-        //     slug: slug,
-        //     experienceLevel: data.experienceLevel,
-        //     location: data.location,
-        //     priceType: data.priceType,
-        //     price: data.price,
-        //     tags: tags,
-        //     descriptionLong: data.descriptionLong,
-        //     descriptionShort: data.descriptionShort,
-        //     categoryId: data.categoryId,
-        // })
-        //     .then((projectId: Id<"projects">) => {
-        //         toast.info("Project created successfully");
-        //         //form.setValue("title", "");
-        //         // router.push(`/seller/${username}/manage-gigs/edit/${projectId}`)
-        //     })
-        //     .catch(() => {
-        //         toast.error("Failed to create gig")
-        //     })
+    const convertDueDateToTimestamp = (dueDate: Date): number => {
+        return new Date(dueDate).getTime();
+    };
+
+    async function onSubmit(data: CreateFormValues){ 
+        if (isSubmitted || pending) return;
+
+        if(fileList?.length){
+            setIsSubmitted(true);
+            const uploadPromises: Promise<void>[] = [];
+            const temporaryId = generateTemporaryId(); 
+
+            for (let i = 0; i < fileList.length; i++) {
+                const file = fileList[i];
+                const postUrl = await generateUploadUrl();
+        
+                const promise = new Promise<void>((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.upload.addEventListener('progress', (event) => {
+                        if (event.lengthComputable) {
+                            const uploadProgress = Math.round((event.loaded / event.total) * 100);
+                            setFilesUploadProgress(prevProgress => ({
+                                ...prevProgress,
+                                [i]: uploadProgress
+                            }));
+                        }
+                    });
+                    xhr.open('POST', postUrl);
+                    xhr.setRequestHeader('Content-Type', file.type);
+                    xhr.onload = () => {
+                        if(xhr.status === 200){
+                            const response = JSON.parse(xhr.responseText);
+                            const storageId = response.storageId; 
+                            createFile({
+                                name: file.name,
+                                type: file.type,
+                                size: formatFileSize(file.size),
+                                fileId: storageId,
+                                temporaryId,
+                            })
+                                .then(() => { 
+                                    resolve();
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                });
+                        }else{
+                            reject(new Error('Error: Non-200 status code received'));
+                        }
+                    };
+                    xhr.onerror = (error) => reject(error);
+                    xhr.send(file);
+                });
+                uploadPromises.push(promise);
+            }
+        
+            try {
+                await Promise.all(uploadPromises); 
+                 
+                mutate({ 
+                    workId: workId,
+                    title: data.title,
+                    longDescription: data.descriptionLong,
+                    shortDescription: data.descriptionShort,
+                    dueDate: convertDueDateToTimestamp(data.dueDate),
+                    payment: data.payment,
+                    tasks: data.tasks, 
+                    hasFiles: true,
+                    temporaryId
+                })
+                    .then(() => {
+                        toast.info("Milestone created successfully");
+                        //form.setValue("title", "");
+                        // router.push(`/seller/${username}/manage-gigs/edit/${projectId}`)
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                        toast.error("Failed to create gig")
+                    })
+                
+            } catch (error) {
+                console.error('Error uploading files:', error);
+            }
+        }else{
+            mutate({ 
+                workId: workId,
+                title: data.title,
+                longDescription: data.descriptionLong,
+                shortDescription: data.descriptionShort,
+                dueDate: convertDueDateToTimestamp(data.dueDate),
+                payment: data.payment,
+                tasks: data.tasks, 
+                hasFiles: false,
+            })
+                .then(() => {
+                    toast.info("Milestone created successfully");
+                    //form.setValue("title", "");
+                    // router.push(`/seller/${username}/manage-gigs/edit/${projectId}`)
+                })
+                .catch((err) => {
+                    console.log(err)
+                    toast.error("Failed to create gig")
+                })
+        }
     }
+
+    const onFileSelect = (files: FileList | null) => {
+        if (!files) return;
+      
+        if (!fileList) {
+          setFileList(files);
+        } else {
+          const updatedFiles: File[] = [];
+          Array.from(fileList).forEach((file) => updatedFiles.push(file));
+          Array.from(files).forEach((file) => updatedFiles.push(file));
+          const updatedFileList = new DataTransfer();
+          updatedFiles.forEach((file) => updatedFileList.items.add(file));
+          setFileList(updatedFileList.files);
+        }
+    };
+
+    const handleOnRemoveFile = (index: number) => {
+        if (fileList) {
+          const updatedFiles = Array.from(fileList);
+          updatedFiles.splice(index, 1);
+          const updatedFileList = new DataTransfer();
+          updatedFiles.forEach((file) => updatedFileList.items.add(file));
+          setFileList(updatedFileList.files);
+        }
+    };
 
     return (
         <Form {...form}>
@@ -255,6 +381,28 @@ export const CreateForm = ({
                         <FormMessage />
                     </FormItem>
                     )}
+                />
+
+                {fileList && fileList?.length > 0 &&
+                    <>
+                        <div className="w-full flex pr-[25px] pl-[15px] pt-[6px]">
+                            <div className="flex flex-1"></div>
+                            <span className="text-xs font-light text-[#95979d]">{fileList.length == 1 ? fileList.length+" File" : fileList.length+" Files"}</span>
+                        </div>
+                        <div className="bottom-0 left-0 w-full p-[15px] pt-0 mt-[10px] ">
+                            <div className="pt-[10px] pb-[0px] border-t border-[#dadbdd]">
+                                <ListFiles
+                                    fileList={fileList}
+                                    onRemoveFile={handleOnRemoveFile}
+                                    filesUploadProgress={filesUploadProgress}
+                                />
+                            </div>
+                        </div>
+                    </>
+                }
+
+                <FileUpload
+                    onFileSelect={onFileSelect}
                 />
                     
                 {/* <FormField

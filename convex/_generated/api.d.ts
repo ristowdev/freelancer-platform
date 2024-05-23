@@ -23,6 +23,7 @@ import type * as gigs from "../gigs.js";
 import type * as http from "../http.js";
 import type * as inboxNotifications from "../inboxNotifications.js";
 import type * as messages from "../messages.js";
+import type * as milestones from "../milestones.js";
 import type * as notifications from "../notifications.js";
 import type * as offers from "../offers.js";
 import type * as projects from "../projects.js";
@@ -33,6 +34,7 @@ import type * as seedSubcategories from "../seedSubcategories.js";
 import type * as skills from "../skills.js";
 import type * as stripe from "../stripe.js";
 import type * as users from "../users.js";
+import type * as works from "../works.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -52,6 +54,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   inboxNotifications: typeof inboxNotifications;
   messages: typeof messages;
+  milestones: typeof milestones;
   notifications: typeof notifications;
   offers: typeof offers;
   projects: typeof projects;
@@ -62,6 +65,7 @@ declare const fullApi: ApiFromModules<{
   skills: typeof skills;
   stripe: typeof stripe;
   users: typeof users;
+  works: typeof works;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

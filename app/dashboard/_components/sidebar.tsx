@@ -23,6 +23,10 @@ const links = [
         link: "/dashboard",
         icon: <Home {...iconStyles}/>
     },{
+        name: "Works",
+        link: "/dashboard/works",
+        icon: <BriefcaseBusiness {...iconStyles}/>
+    },{
         name: "Proposals",
         link: "/dashboard/proposals",
         icon: <FaListCheck {...iconStyles}/>
@@ -38,10 +42,6 @@ const links = [
         name: "Payouts",
         link: "/dashboard/payouts",
         icon: <CircleDollarSign {...iconStyles}/>
-    },{
-        name: "Projects",
-        link: "/dashboard/projects",
-        icon: <BriefcaseBusiness {...iconStyles}/>
     },{
         name: "Skills",
         link: "/dashboard/skills",

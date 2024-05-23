@@ -20,7 +20,7 @@ const CollapsibleButtonArrow = ({
     buttonTitleClassName = "text-base font-semibold text-[#172B4D]",
     children,
 }: CollapsibleButtonArrowProps) => {
-    const [isOpen, setIsOpen] = useState<boolean>(true);
+    const [isOpen, setIsOpen] = useState<boolean>(false);
     
     return (
         <div className="w-full">
@@ -31,7 +31,10 @@ const CollapsibleButtonArrow = ({
                         className="hover:bg-transparent m-0 p-0 w-full h-auto flex justify-start items-center"
                     >
                         <div className="flex flex-1 justify-start items-center">
-                            <span className={buttonTitleClassName}>{buttonTitle}</span>
+                            <span className={buttonTitleClassName}>
+                                {buttonTitle}
+                                {/* <span className="font-normal">{'(click to see)'}</span> */}
+                            </span>
                         </div>  
                         <div className={cn("flex items-center transition-transform duration-200", isOpen ? "rotate-180" : "")}> 
                             <ChevronUp size={21}/>

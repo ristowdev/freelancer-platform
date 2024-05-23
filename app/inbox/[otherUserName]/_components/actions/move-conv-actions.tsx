@@ -18,7 +18,7 @@ interface MoveConversationActionsProps {
     belongsTo: any;
     conversationId: string;
     user: any;
-    proposal: any;
+    work: any;
 }
 
 const MoveConversationActions = ({
@@ -26,7 +26,7 @@ const MoveConversationActions = ({
     belongsTo,
     conversationId,
     user,
-    proposal
+    work
 }: MoveConversationActionsProps) => {
     const {
         mutate: _moveBelongsTo,
@@ -142,7 +142,8 @@ const MoveConversationActions = ({
                         <DropdownMenuItem
                             className="h-[40px] pl-[10px] pr-[10px]"
                             onClick={()=>{
-                                router.push(`/client-dashboard/projects/${proposal.projectId}/milestones/create?proposalId=${proposal._id}`)
+                                console.log(work)
+                                router.push(`/client-dashboard/works/${work._id}/milestones/create`)
                             }}
                         >
                             <div className="flex items-center">

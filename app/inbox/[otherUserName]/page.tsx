@@ -40,13 +40,7 @@ const ConversationPage = ({
 
         callMutation();
     }, [get, params.otherUserName]);
-
-    console.log("convconvconvconv")
-    console.log("convconvconvconv")
-    console.log("convconvconvconv")
-    console.log("convconvconvconv")
-    console.log("convconvconvconv")
-    console.log(conv)
+ 
 
     if (conversation === null || conv === undefined || conv === undefined) {
         return <div className="text-center text-muted-foreground text-3xl font-semibold p-4 animation-pulse">Loading...</div>
@@ -67,6 +61,7 @@ const ConversationPage = ({
                         otherUser={conv.otherUser}
                         proposal={conv.proposal}
                         user={user}
+                        work={conv.work}
                     />
                     </div>
 

@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { defineSchema, defineTable } from "convex/server";
-
+ 
 export default defineSchema({
     users: defineTable({
         fullName: v.string(),
@@ -253,7 +253,6 @@ export default defineSchema({
     })
         .index("by_messageId", ["messageId"]) 
         .index("by_user", ["userId"]),
-
     messagesReports: defineTable({
         messageId: v.id("messages"),
         reportedFromUserId: v.id("users"),
@@ -269,5 +268,57 @@ export default defineSchema({
         .index("by_messageId", ["messageId"]) 
         .index("by_reportedUserId", ["reportedUserId"]) 
         .index("by_reportedFromUserId", ["reportedFromUserId"]),
+    milestones: defineTable({
+        workId: v.id("works"),  
+        title: v.string(),
+        longDescription: v.string(),
+        shortDescription: v.string(),
+        dueDate: v.number(),
+        payment: v.number(), 
+        status: v.union(
+            v.literal("active"),
+            v.literal("finished"),
+            v.literal("inReview"),
+            v.literal("rejected"),
+        )
+    })
+        .index("by_workId", ["workId"]),
+    milestoneTasks: defineTable({
+        milestoneId: v.id("milestones"),
+        name: v.string(),
+        done: v.boolean(),
+        status: v.optional(v.union(
+            v.literal("inReview"),
+            v.literal("rejected"),
+        ))
+    }),
+    works: defineTable({
+        userId: v.id("users"),
+        clientId: v.id("users"),
+        proposalId: v.id("proposals"),
+        projectId: v.id("projects"), 
+        status: v.optional(v.union(
+            v.literal("inProgress"),
+            v.literal("finished"),
+            v.literal("canceled"),
+        )),
+    })
+        .index("by_userId", ["userId"])
+        .index("by_clientId", ["clientId"])
+        .index("by_proposalId", ["proposalId"]),
+    milestoneFiles: defineTable({
+        name: v.string(),
+        type: v.string(),
+        size: v.optional(v.string()),
+        fileId: v.id("_storage"),
+        temporaryId: v.string(),
+        milestoneId: v.optional(v.id("milestones")),
+        variant: v.union(
+            v.literal("fromClient"),
+            v.literal("fromUser"),
+        )
+    })
+        .index("by_temporaryId", ["temporaryId"]) 
+        .index("by_milestoneId", ["milestoneId"]) 
     
 });

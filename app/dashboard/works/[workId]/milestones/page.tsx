@@ -5,24 +5,36 @@ import { BsDiamondFill } from "react-icons/bs";
 import { FaStar } from "react-icons/fa6";
 import Timeline from "./_components/timeline";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 
  
 
 interface DashboardProps {
-    
+    params: { workId: string };
 };
 
 const Dashboard = ({
+     params
 }: DashboardProps) => {
+
+     const milestones = useQuery(api.milestones.get, { workId: params.workId as Id<"works"> })
      
-    return (
+     if(milestones === undefined || milestones === null){
+          return <>Loading...</>;
+     }
+
+     return (
          <>
           <div className="mt-[20px] container max-w-7xl px-4 w-full flex flex-col h-full">
                <h1 className="h-1 font-bold text-3xl mt-[20px]">Milestone</h1>
                <div className="flex relative mt-[60px] h-full">
                     <div className="bg-[#EFF0F4] w-full min-h-[1500px] rounded-[10px]">
                          <div className="p-[30px] pr-[50px]">
-                              <Timeline />
+                              <Timeline 
+                                   milestones={milestones}
+                              />
                          </div>
                     </div>
                     

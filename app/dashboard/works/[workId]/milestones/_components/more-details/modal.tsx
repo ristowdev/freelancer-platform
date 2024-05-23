@@ -10,15 +10,20 @@ import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Clock, Download, Plus, Send, SquareCheckBig } from "lucide-react";
+import { Clock, Download, File, Plus, Send, SquareCheckBig } from "lucide-react";
 import { LuFileText } from "react-icons/lu";
 import CollapsibleButtonArrow from "@/components/collapsible-button-arrow";
 import { Checkbox } from "@/components/ui/checkbox";
 import { GrAttachment } from "react-icons/gr";
 import Image from "next/image";
+import ParsedContent from "@/components/parsed-content";
+import Tasks from "./_components/tasks";
+import { formatDate } from "./_components/time-format";
+import { isFileImage } from "@/utils/is-file-image";
 
 interface MoreDetailsModalProps {
     children: React.ReactNode;
+    milestone: any;
 }
 
 const tasks = [
@@ -53,10 +58,29 @@ const tasks = [
 ];
 
 const MoreDetailsModal = ({
-    children
+    children,
+    milestone
 }: MoreDetailsModalProps) => { 
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
+    const handleDownload = async (fileUrl: string, fileName: string) => {
+        try {
+            const response = await fetch(fileUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            
+            // Create a temporary anchor element to trigger the download
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            link.click();
+    
+            // Cleanup
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error downloading the file:', error);
+        }
+    };
     return (
         <Dialog onOpenChange={(o)=>{setIsOpen(o)}} open={isOpen}>
             <DialogTrigger asChild>
@@ -70,23 +94,23 @@ const MoreDetailsModal = ({
 
                                 <div className="flex items-center sticky top-0 left-0 bg-[#f1f2f4] pt-[15px] pb-[10px] z-50 ">
         
-                                    <span className="text-2xl font-semibold line-clamp-1 text-[#404145]">Create book: How to catch girls</span>
+                                    <span className="text-2xl font-semibold line-clamp-1 text-[#404145]">{milestone.title}</span>
 
                                     <div className="w-fit h-[20px] bg-[#28a746] rounded-full flex items-center justify-center ml-[10px]">
-                                        <span className="text-base pl-[10px] pr-[10px] text-white">Active</span>
+                                        <span className="text-base pl-[10px] pr-[10px] text-white">{milestone.status}</span>
                                     </div>
                                 </div>
 
                                 <div className="">
                                     <div className="flex items-start">
                                         <div className="flex items-center pr-[10px] mr-[10px] border-r border-[#EAEAEA]">
-                                            <span className="text-sm">Due date: <span className="font-semibold">May 20, 2024</span></span>
+                                            <span className="text-sm">Due date: <span className="font-semibold">{milestone.dueDate}</span></span>
                                         </div>
                                         <div className="flex items-center pr-[10px] mr-[10px] border-r border-[#EAEAEA]">
-                                            <span className="text-sm">Payment: <span className="font-bold ">$350.00</span></span>
+                                            <span className="text-sm">Payment: <span className="font-bold ">{milestone.payment}</span></span>
                                         </div>
                                         <div className="flex items-center">
-                                            <span className="text-sm">Tasks: <span className="font-bold">8</span></span>
+                                            <span className="text-sm">Tasks: <span className="font-bold">{milestone.tasks.length}</span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -112,27 +136,9 @@ const MoreDetailsModal = ({
                                         <div className="mt-[10px]">
                                             <span className="text-base font-semibold text-[#172B4D]">Description</span>
                                             <p className="text-sm mt-[5px] leading-[1.5] text-[#172B4D]">
-
-                                            What is facebook post?<br/>
-            - Facebook Posts are public messages posted to a Facebook users entire audience or on a specific persons profile page . Businesses utilize posts to continually provide a presence to their audience and potentially attract new followers.
-            <br/><br/>
-            What is facebook ad?<br/>
-            - Facebook ads refer to online advertisements that are created and published on the Facebook platform to be targeted to its users.
-            <br/><br/>
-            Simple example of facebook ad:<br/>
-            Attachment 1,2,3,4.
-            <br/><br/>
-            Facebook post must have:<br/>
-            1. Introduction simple description about product. Short and clean!<br/>
-            2. Main text. Comes after introduction and he must have long description about product, features and what the product fixes.<br/>
-            3. Tell customers that shipping is absolutely free.<br/>
-            <br/><br/>
-            Just to know: We just work in United Stats.
-            <br/><br/>
-            Text limits:<br/>
-            1. Length of text up to 2000 words.
-            <br/><br/>
-            Write 4 examples, with diffirent words and with diffirent brainstorming.
+                                                <ParsedContent
+                                                    content={milestone.longDescription}
+                                                />
                                             </p>
                                         </div>
 
@@ -142,22 +148,34 @@ const MoreDetailsModal = ({
                                                 <span className="text-base font-semibold text-[#172B4D]">Attachemnts:</span>
                                             </div>
                                             <div className="mt-[15px] flex flex-col w-full">
-                                                {[1,2,3,1,2,2,].map(()=>(<>
+                                                {milestone?.clientFiles?.map((file:any)=>(<>
                                                     <div className="w-full flex">
-                                                        <div className="flex w-[112px] bg-[#dadfe3] rounded-sm h-[80px] mb-[20px]">
-                                                            <Image
-                                                                src="https://charming-clownfish-726.convex.cloud/api/storage/e09d731b-32ef-437d-8904-61831f0db7eb"
-                                                                width={100}
-                                                                height={100}
-                                                                alt="meharba"
-                                                                className="w-full h-full object-contain"
-                                                            />
+                                                        <div className="flex w-[112px] bg-[#dadfe3] rounded-sm h-[80px] mb-[20px] items-center justify-center">
+                                                            {isFileImage(file.type) ? 
+                                                                <Image
+                                                                    src={file.url}
+                                                                    width={100}
+                                                                    height={100}
+                                                                    alt="meharba"
+                                                                    className="w-full h-full object-contain"
+                                                                />
+                                                            : <>
+                                                                <File size={27} color="#172b4d"/>
+                                                            </>}
                                                         </div>
 
                                                         <div className="ml-[20px] flex flex-col">
-                                                            <span className="text-sm text-[#172b4d] font-bold hover:underline cursor-pointer">greenpeace-facebook-ad-example-2.png</span>
-                                                            <span className="font-normal text-sm text-[#44546f] mt-[2px]">Added Aug 27, 2022 at 3:44 PM</span>
-                                                            <Button variant="link" className="w-fit p-0 m-0 text-xs text-[#172b4d] font-normal flex items-center">
+                                                            <span className="text-sm text-[#172b4d] font-bold hover:underline cursor-pointer"
+                                                                onClick={()=>{window.open(file.url)}}
+                                                            >{file.name}</span>
+                                                            <span className="font-normal text-sm text-[#44546f] mt-[2px]">Added {formatDate(file._creationTime)}</span>
+                                                            <Button 
+                                                                variant="link" 
+                                                                className="w-fit p-0 m-0 text-xs text-[#172b4d] font-normal flex items-center"
+                                                                onClick={(e)=>{
+                                                                    handleDownload(file.url, file.name);
+                                                                }} 
+                                                            >
                                                                 <Download size={12} color="#172b4d" className="mr-[3px]"/>
                                                                 Download
                                                             </Button>
@@ -171,26 +189,9 @@ const MoreDetailsModal = ({
                                 </div>
 
 
-                                <div className="mt-[20px] border-t border-[#EAEAEA] pt-[20px]">
-                                    <div className="flex items-center">
-                                        <SquareCheckBig size={18} color="#172B4D" />
-                                        <span className="text-base font-semibold text-[#172B4D] ml-[5px]">Tasks</span>
-                                    </div>
-                                    <div className="mt-[10px] w-full flex items-center">
-                                        <span className="text-xs text-[#44546f]">80%</span>
-                                        <div className="w-full h-[8px] rounded-full bg-[#e4e6ea] relative ml-[8px]">
-                                            <div className="absolute top-0 left-0 w-[78%] h-[8px] rounded-l-full bg-[#579dff] flex items-center justify-center"></div>
-                                        </div>
-                                    </div>
-                                    <div className="mt-[15px]">
-                                        {tasks.map((task: any, index: number)=>(<>
-                                            <div className="flex items-start mb-[15px]">
-                                                <Checkbox className="w-[16px] h-[16px] mt-[1.5px]" id={`cb-${task.id}`}/>
-                                                <label className="text-sm ml-[12px] text-[#172B4D]" id={`cb-${task.id}`}>{task.name}</label>
-                                            </div>
-                                        </>))}
-                                    </div>
-                                </div>
+                                <Tasks 
+                                    tasks={milestone.tasks}
+                                />
 
                                 <div className="mt-[20px] border-t border-[#EAEAEA] pt-[20px]">
                                     <div className="flex items-center">

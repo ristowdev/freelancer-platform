@@ -3,12 +3,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LuFileText } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import MoreDetailsModal from "./more-details/modal";
+import DoneProgress from "./more-details/_components/tasks/done-progress";
 
 interface MilestoneProps {
+    milestone:any;
 }
 
 const Card = ({
-
+    milestone
 }: MilestoneProps) => {  
 
     return (
@@ -23,27 +25,27 @@ const Card = ({
                         <div className="p-[30px]">
 
                             <div className="flex items-center">
-                                <span className="text-2xl font-semibold line-clamp-1 text-[#404145]">Create book: How to catch girls</span>
+                                <span className="text-2xl font-semibold line-clamp-1 text-[#404145]">{milestone.title}</span>
 
                                 <div className="w-fit h-[25px] bg-[#28a746] rounded-full flex items-center justify-center ml-[10px]">
-                                    <span className="text-base pl-[10px] pr-[10px] text-white">Active</span>
+                                    <span className="text-base pl-[10px] pr-[10px] text-white">{milestone.status}</span>
                                 </div>
                             </div>
                             <div className="mt-[10px]">
                                 <div className="flex items-start">
                                     <div className="flex items-center pr-[10px] mr-[10px] border-r border-[#EAEAEA]">
-                                        <span className="text-sm">Due date: <span className="font-semibold">May 20, 2024</span></span>
+                                        <span className="text-sm">Due date: <span className="font-semibold">{milestone.dueDate}</span></span>
                                     </div>
                                     <div className="flex items-center pr-[10px] mr-[10px] border-r border-[#EAEAEA]">
-                                        <span className="text-sm">Payment: <span className="font-bold ">$350.00</span></span>
+                                        <span className="text-sm">Payment: <span className="font-bold ">{milestone.payment}</span></span>
                                     </div>
                                     <div className="flex items-center">
-                                        <span className="text-sm">Tasks: <span className="font-bold">8</span></span>
+                                        <span className="text-sm">Tasks: <span className="font-bold">{milestone.tasks.length}</span></span>
                                     </div>
                                 </div>
                             </div>
 
-                            <p className="text-base line-clamp-2 mt-[15px] leading-[1.5] text-[#62646a]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia, molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum numquam blanditiis</p>
+                            <p className="text-base line-clamp-2 mt-[15px] leading-[1.5] text-[#62646a]">{milestone.shortDescription}</p>
 
                             
 
@@ -98,13 +100,16 @@ const Card = ({
                                 </div>
                             </div>
 
-                            <div className="mt-[30px] w-full">
-                            <div className="mt-[10px] w-full flex items-center">
+                            <div className="mt-[20px] w-full">
+                                <DoneProgress 
+                                    tasks={milestone.tasks}
+                                />
+                            {/* <div className="mt-[10px] w-full flex items-center">
                                         <span className="text-xs text-[#44546f]">80%</span>
                                         <div className="w-full h-[8px] rounded-full bg-[#e4e6ea] relative ml-[8px]">
                                             <div className="absolute top-0 left-0 w-[78%] h-[8px] rounded-l-full bg-[#579dff] flex items-center justify-center"></div>
                                         </div>
-                                    </div>
+                                    </div> */}
                                 {/* <div className="w-full h-[20px] rounded-full bg-[#e7ebed] relative">
                                     <div className="absolute top-0 left-0 w-[78%] h-[20px] rounded-l-full bg-[#007afe] flex items-center justify-center">
                                         <span className="text-xs text-white">{'78% in progress'}</span>
@@ -124,7 +129,9 @@ const Card = ({
                                     </Avatar>
                                 </div>
                                 <div>
-                                    <MoreDetailsModal>
+                                    <MoreDetailsModal
+                                        milestone={milestone}
+                                    >
                                         <Button
                                             className="bg-[#f0f0f0] hover:black hover:text-white text-black text-sm font-normal h-[35px]"
                                         >

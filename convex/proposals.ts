@@ -354,6 +354,14 @@ export const acceptProposalClient = mutation({
             belongsTo:"allMessages"
         });
 
+        await ctx.db.insert("works", {
+            userId: acceptProposal.userId,
+            clientId: acceptProposal.clientId,
+            proposalId: args.id,
+            projectId: acceptProposal.projectId as Id<"projects">,
+            status: "inProgress"
+        });
+
         return acceptProposalFinal;
     },
 });
