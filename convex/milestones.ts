@@ -80,7 +80,7 @@ export const create = mutation({
 
         return true;
 
-    },
+    }, 
 });
 
 export const get = query({
@@ -178,7 +178,6 @@ export const get = query({
                 .query("users")
                 .filter((q) => q.eq(q.field("_id"), work?.clientId as Id<"users">))
                 .unique();
-            
 
             return {
                 ...milestone,
@@ -194,6 +193,64 @@ export const get = query({
 
         
         return milestonesWithRelations;
+ 
+    },
+});
+
+export const getWorkDetails = query({
+    args: {
+        workId: v.id("works")
+    }, 
+    async handler(ctx, args) {
+        const identity = await ctx.auth.getUserIdentity();
+
+        if (!identity) {
+            throw new Error("Unauthorized");
+        }
+
+        // current user
+        const currentUser = await ctx.db
+            .query("users")
+            .withIndex("by_token", (q) => 
+                q.eq("tokenIdentifier", identity.subject)
+            )
+            .unique();
+
+        if (!currentUser) {
+            throw new Error("Couldn't authenticate user");
+        }
+
+        const work = await ctx.db
+            .query("works")
+            .filter((q)=> 
+                q.and(q.eq(q.field("_id"), args.workId), q.eq(q.field("userId"), currentUser._id)),
+            )
+            .unique();
+
+        if(!work){
+            throw new Error("Work not found");
+        }
+
+        const project = await ctx.db
+            .query("projects")
+            .filter((q) => q.eq(q.field("_id"), work?.projectId as Id<"projects">))
+            .unique();
+        
+        const client = await ctx.db
+            .query("users")
+            .filter((q) => q.eq(q.field("_id"), work?.clientId as Id<"users">))
+            .unique();
+
+        const proposal = await ctx.db
+            .query("proposals")
+            .filter((q) => q.eq(q.field("_id"), work?.proposalId as Id<"proposals">))
+            .unique(); 
+        
+        return {
+            client,
+            project,
+            proposal
+        };
  
     },
 });

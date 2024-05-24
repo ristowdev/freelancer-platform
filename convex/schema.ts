@@ -127,7 +127,7 @@ export default defineSchema({
         conversationId: v.id("conversations"),
     })
         .index("by_toUserId", ["toUserId"])
-        .index("by_fromUserId", ["fromUserId"])
+        .index("by_fromUserId", ["fromUserId"]) 
         .index("by_conversationId", ["conversationId"]),
     offers: defineTable({
         gigId: v.id("gigs"),
@@ -318,7 +318,7 @@ export default defineSchema({
             v.literal("fromUser"),
         ),
         status: v.optional(v.union(
-            v.literal("inReview"),
+            v.literal("inReview"), 
             v.literal("rejected"),
             v.literal("accepted"),
         ))

@@ -62,7 +62,7 @@ const ConversationPage = ({
                         proposal={conv.proposal}
                         user={user}
                         work={conv.work}
-                    />
+                    /> 
                     </div>
 
                 <div className="w-[20%] ml-[2%] mt-[10px]">
@@ -74,7 +74,9 @@ const ConversationPage = ({
                                 />
 
                                 <div className="flex-1 h-full flex border-t border-[#e4e5e7] mt-[20px] pt-[15px] flex-col overflow-hidden">
-                                    <Milestone />
+                                    <Milestone 
+                                        work={conv.work}
+                                    />
                                 </div>
                             </div>
                         </div>

@@ -75,7 +75,7 @@ export const getByUser = query({
 
 export const getConversation = query({
     args: { username: v.string() },
-    handler: async (ctx, args) => {
+    handler: async (ctx, args) => { 
         const identity = await ctx.auth.getUserIdentity();
 
         if (!identity) {
@@ -236,6 +236,10 @@ export const getConversation = query({
             )
             .unique();
 
+        const workMilestones = await ctx.db.query("milestones")
+            .filter((q: any) => q.eq(q.field("workId"), work?._id))
+            .collect();
+
         return {
             currentUser,
             otherUser,
@@ -246,7 +250,10 @@ export const getConversation = query({
                 ...proposal,
                 project
             },
-            work
+            work: {
+                ...work,
+                milestones: workMilestones
+            }
         };
     }
 });

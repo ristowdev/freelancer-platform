@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { formatAmount } from "@/utils/format-amount";
+import { useRouter } from "next/navigation";
 
  
 
@@ -18,10 +20,11 @@ interface DashboardProps {
 const Dashboard = ({
      params
 }: DashboardProps) => {
-
+     const router = useRouter();
      const milestones = useQuery(api.milestones.get, { workId: params.workId as Id<"works"> })
+     const workDetils = useQuery(api.milestones.getWorkDetails, { workId: params.workId as Id<"works"> })
      
-     if(milestones === undefined || milestones === null){
+     if(milestones === undefined || milestones === null || workDetils === undefined || workDetils === null){
           return <>Loading...</>;
      }
 
@@ -46,11 +49,11 @@ const Dashboard = ({
 
                                    <div className="flex items-center mt-[15px]">
                                         <Avatar className="w-[35px] h-[35px]">
-                                             <AvatarImage src="https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18yZzNPVmszUzdSdjBUUlVmekFqU0ZiTHdVUFUifQ" />
-                                             <AvatarFallback>ME</AvatarFallback>
+                                             <AvatarImage src={workDetils?.client?.profileImageUrl} />
+                                             <AvatarFallback>{workDetils?.client?.fullName[0]}</AvatarFallback>
                                         </Avatar>
                                         <div className="ml-[10px]">
-                                             <span className="text-base font-semibold">Ilija Holly</span>
+                                             <span className="text-base font-semibold">{workDetils?.client?.fullName}</span>
                                         </div>
                                    </div>  
                                    <div className="mt-[15px] w-full">
@@ -103,9 +106,9 @@ const Dashboard = ({
                                              <div className="w-[150px] -mr-[2px]">
                                                   <Link
                                                        className="text-sm underline h-fit text-[#404145] line-clamp-1 font-semibold p-0 m-0"
-                                                       href=""
+                                                       href={`/project-details/${workDetils?.project?.slug}`}
                                                   >
-                                                       Website developmet for flwp lfwlp lfelp fwe
+                                                       {workDetils?.project?.title}
                                                   </Link>
                                              </div>
                                         </div> 
@@ -117,7 +120,7 @@ const Dashboard = ({
                                              </div>
                                              <div className="w-[150px] flex items-end justify-end">
                                                   <span className="text-sm text-[#404145] font-semibold">
-                                                       Hourly
+                                                       {workDetils?.project?.priceType}
                                                   </span>
                                              </div>
                                         </div> 
@@ -129,7 +132,7 @@ const Dashboard = ({
                                              </div>
                                              <div className="w-[150px] flex items-center justify-end">
                                                   <span className="text-sm text-[#404145] font-semibold">
-                                                  $94.00/hr
+                                                       {formatAmount(workDetils?.project?.price || 0)}
                                                   </span>
                                              </div>
                                         </div> 
@@ -140,7 +143,7 @@ const Dashboard = ({
                                         </div>
                                         <div className="w-[150px] flex items-end justify-end">
                                              <span className="text-sm text-[#404145] font-semibold">
-                                                  Hourly
+                                                  {formatAmount(workDetils?.proposal?.hourlyRate || 0)}
                                              </span>
                                         </div>
                                    </div> 
@@ -189,7 +192,10 @@ const Dashboard = ({
                                    </div> 
                               </div>
                               <div className="w-full mt-[20px]">
-                                   <Button className="w-full text-base">Chat with Ilija Holly</Button>
+                                   <Button 
+                                        className="w-full text-base"
+                                        onClick={()=>{router.push(`/inbox/${workDetils?.client?.username}`)}}
+                                   >Chat with Ilija Holly</Button>
                               </div>
                          </div>  
                     </div>

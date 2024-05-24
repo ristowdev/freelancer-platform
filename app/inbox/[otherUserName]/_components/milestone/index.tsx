@@ -3,10 +3,11 @@ import Card from "./_components/card";
 import Timeline from "./_components/timeline";
 
 interface MilestoneProps {
+    work: any;
 }
 
 const Milestone = ({
-
+    work
 }: MilestoneProps) => {  
 
     return (
@@ -16,12 +17,14 @@ const Milestone = ({
                     <span className="text-base font-semibold text-[#222325]">Milestone</span>
                 </div>
                 <div>
-                    <Link href="/dashboard/milestone/lfeppw-3lcll2-alllps-wepepwl" className="underline text-sm">View Detailed</Link>
-                </div>
+                    <Link href={`/dashboard/works/${work._id}/milestones`} className="underline text-sm">View Detailed</Link>
+                </div> 
             </div>
             <div className="h-full bg-[#EFF0F4] w-full flex flex-1 rounded-[10px] mt-[15px]  p-[15px] pr-[40px] overflow-y-scroll"> 
                 <div className="flex flex-1 w-full h-full">    
-                    <Timeline />
+                    <Timeline 
+                        milestones={work.milestones}
+                    />
                 </div>
             </div>
         </>
