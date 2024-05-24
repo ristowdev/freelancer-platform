@@ -316,9 +316,25 @@ export default defineSchema({
         variant: v.union(
             v.literal("fromClient"),
             v.literal("fromUser"),
-        )
+        ),
+        status: v.optional(v.union(
+            v.literal("inReview"),
+            v.literal("rejected"),
+            v.literal("accepted"),
+        ))
     })
         .index("by_temporaryId", ["temporaryId"]) 
-        .index("by_milestoneId", ["milestoneId"]) 
+        .index("by_milestoneId", ["milestoneId"]), 
+    milestoneComments: defineTable({
+        userId: v.id("users"),
+        clientId: v.id("users"),
+        milestoneId: v.id("milestones"),
+        comment: v.string(),
+        messageOwnerId: v.id("users"),
+    })
+        .index("by_userId", ["userId"]) 
+        .index("by_clientId", ["clientId"]) 
+        .index("by_milestoneId", ["milestoneId"])
+        .index("by_messageOwnerId", ["messageOwnerId"])
     
 });

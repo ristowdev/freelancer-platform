@@ -13,14 +13,16 @@ interface CollapsibleButtonArrowProps {
     buttonTitle: string;
     buttonTitleClassName?: string;
     children: React.ReactNode;
+    openDetails: boolean;
 };
 
 const CollapsibleButtonArrow = ({
     buttonTitle,
     buttonTitleClassName = "text-base font-semibold text-[#172B4D]",
     children,
+    openDetails
 }: CollapsibleButtonArrowProps) => {
-    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [isOpen, setIsOpen] = useState<boolean>(openDetails);
     
     return (
         <div className="w-full">

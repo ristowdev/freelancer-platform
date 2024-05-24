@@ -2,10 +2,12 @@ import Card from "./card";
 
 interface MilestoneProps {
     milestones: any;
+    workId: string;
 }
 
 const Timeline = ({
-    milestones
+    milestones,
+    workId
 }: MilestoneProps) => {  
 
     return (
@@ -16,6 +18,7 @@ const Timeline = ({
                     {milestones.map((milestone: any)=> (<>
                         <Card 
                             milestone={milestone}
+                            workId={workId}
                         />
                     </>))}
                 </div>

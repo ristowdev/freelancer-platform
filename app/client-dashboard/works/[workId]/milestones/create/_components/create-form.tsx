@@ -157,6 +157,7 @@ export const CreateForm = ({
                                 size: formatFileSize(file.size),
                                 fileId: storageId,
                                 temporaryId,
+                                variant: "fromClient"
                             })
                                 .then(() => { 
                                     resolve();

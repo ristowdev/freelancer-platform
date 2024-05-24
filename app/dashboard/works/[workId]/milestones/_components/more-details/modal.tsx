@@ -10,20 +10,24 @@ import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Clock, Download, File, Plus, Send, SquareCheckBig } from "lucide-react";
-import { LuFileText } from "react-icons/lu";
-import CollapsibleButtonArrow from "@/components/collapsible-button-arrow";
-import { Checkbox } from "@/components/ui/checkbox";
-import { GrAttachment } from "react-icons/gr";
+import { CircleCheck, Clock, Download, File, Link, Send, } from "lucide-react"; 
+import CollapsibleButtonArrow from "@/components/collapsible-button-arrow"; 
 import Image from "next/image";
 import ParsedContent from "@/components/parsed-content";
 import Tasks from "./_components/tasks";
 import { formatDate } from "./_components/time-format";
 import { isFileImage } from "@/utils/is-file-image";
+import InitFiles from "./_components/files";
+import { toast } from "sonner";
+import { formatAmount } from "@/utils/format-amount";
+import { formatTimestampToDateDefault } from "@/utils/formated-timestamp";
+import CommentsInit from "./_components/comments";
 
 interface MoreDetailsModalProps {
     children: React.ReactNode;
     milestone: any;
+    workId: string;
+    openDetails: boolean;
 }
 
 const tasks = [
@@ -59,9 +63,13 @@ const tasks = [
 
 const MoreDetailsModal = ({
     children,
-    milestone
+    milestone,
+    workId,
+    openDetails
 }: MoreDetailsModalProps) => { 
     const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [isReadyForSubmit, setIsReadyForSubmit] = useState<boolean>(false);
+    const [submitForReview, setSubmitForReview] = useState<boolean>(false);
 
     const handleDownload = async (fileUrl: string, fileName: string) => {
         try {
@@ -81,8 +89,19 @@ const MoreDetailsModal = ({
             console.error('Error downloading the file:', error);
         }
     };
+
+    const checkIfAllTasksAreDone = (): boolean => {
+        for (let task of milestone.tasks) {
+            if (!task.done) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
     return (
-        <Dialog onOpenChange={(o)=>{setIsOpen(o)}} open={isOpen}>
+        <Dialog onOpenChange={(o)=>{setIsOpen(o); if(o===false){setIsReadyForSubmit(false)}}} open={isOpen}>
             <DialogTrigger asChild>
                 {children}
             </DialogTrigger>
@@ -95,19 +114,27 @@ const MoreDetailsModal = ({
                                 <div className="flex items-center sticky top-0 left-0 bg-[#f1f2f4] pt-[15px] pb-[10px] z-50 ">
         
                                     <span className="text-2xl font-semibold line-clamp-1 text-[#404145]">{milestone.title}</span>
-
-                                    <div className="w-fit h-[20px] bg-[#28a746] rounded-full flex items-center justify-center ml-[10px]">
-                                        <span className="text-base pl-[10px] pr-[10px] text-white">{milestone.status}</span>
-                                    </div>
+                                    {milestone?.status === "inReview" &&
+                                        <div className="bg-[#ff9200] flex items-center justify-center w-fit h-[28px] rounded-full pl-[8px] pr-[8px] ml-[10px]">
+                                            <Clock size={16} color="white"/>
+                                            <span className="text-sm text-white  font-semibold ml-[4px]">In Review</span>
+                                        </div>
+                                    } 
+                                    {milestone?.status === "active" &&
+                                        <div className=" bg-[#28a746] flex items-center justify-center w-fit h-[28px] rounded-full pl-[8px] pr-[8px] ml-[10px]">
+                                            <CircleCheck size={16} color="white"/>
+                                            <span className="text-sm text-white  font-semibold ml-[4px]">Active</span>
+                                        </div>
+                                    }
                                 </div>
 
                                 <div className="">
                                     <div className="flex items-start">
                                         <div className="flex items-center pr-[10px] mr-[10px] border-r border-[#EAEAEA]">
-                                            <span className="text-sm">Due date: <span className="font-semibold">{milestone.dueDate}</span></span>
+                                            <span className="text-sm">Due date: <span className="font-semibold">{formatTimestampToDateDefault(milestone.dueDate)}</span></span>
                                         </div>
                                         <div className="flex items-center pr-[10px] mr-[10px] border-r border-[#EAEAEA]">
-                                            <span className="text-sm">Payment: <span className="font-bold ">{milestone.payment}</span></span>
+                                            <span className="text-sm">Payment: <span className="font-bold ">{formatAmount(milestone.payment)}</span></span>
                                         </div>
                                         <div className="flex items-center">
                                             <span className="text-sm">Tasks: <span className="font-bold">{milestone.tasks.length}</span></span>
@@ -119,19 +146,20 @@ const MoreDetailsModal = ({
                                     <span className="text-base font-semibold">Members</span>
                                     <div className="flex flex-1 mt-[5px]">
                                         <Avatar className="w-[40px] h-[40px] border-2 border-transparent">
-                                            <AvatarImage src="https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18yZzNaMjYxbk10OGdKNVFmTFFYR2RwVlpGTEsifQ" />
-                                            <AvatarFallback>RS</AvatarFallback>
+                                            <AvatarImage src={milestone?.members?.client?.profileImageUrl} />
+                                            <AvatarFallback>{milestone?.members?.client?.fullName[0]}</AvatarFallback>
                                         </Avatar>
                                         <Avatar className="w-[40px] h-[40px] -ml-[12px] border-[2px] border-white">
-                                            <AvatarImage src="https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18yZzNPVmszUzdSdjBUUlVmekFqU0ZiTHdVUFUifQ" />
-                                            <AvatarFallback>ME</AvatarFallback>
-                                        </Avatar>
+                                            <AvatarImage src={milestone?.members?.user?.profileImageUrl} />
+                                            <AvatarFallback>{milestone?.members?.user?.fullName[0]}</AvatarFallback>
+                                        </Avatar> 
                                     </div>
                                 </div>
 
                                 <div className="w-full mt-[20px]">
                                     <CollapsibleButtonArrow
                                         buttonTitle="What you need to do:"
+                                        openDetails={openDetails}
                                     >
                                         <div className="mt-[10px]">
                                             <span className="text-base font-semibold text-[#172B4D]">Description</span>
@@ -165,9 +193,17 @@ const MoreDetailsModal = ({
                                                         </div>
 
                                                         <div className="ml-[20px] flex flex-col">
-                                                            <span className="text-sm text-[#172b4d] font-bold hover:underline cursor-pointer"
+                                                            <div className="w-full flex items-center cursor-pointer"
                                                                 onClick={()=>{window.open(file.url)}}
-                                                            >{file.name}</span>
+                                                            >
+                                                                <Link className="mr-[4px]" size={16} color="#172b4d"/>
+                                                                <div className="max-w-[65%] flex items-center">
+                                                                    <span className="text-sm text-[#172b4d] font-bold hover:underline cursor-pointer line-clamp-1 w-full"
+                                                                    >
+                                                                        {file.name} .dm
+                                                                    </span>
+                                                                </div>
+                                                            </div>
                                                             <span className="font-normal text-sm text-[#44546f] mt-[2px]">Added {formatDate(file._creationTime)}</span>
                                                             <Button 
                                                                 variant="link" 
@@ -188,115 +224,83 @@ const MoreDetailsModal = ({
                                     </CollapsibleButtonArrow>
                                 </div>
 
-
-                                <Tasks 
+                                <Tasks
                                     tasks={milestone.tasks}
+                                    canUpdate={milestone.status==="active"}
+                                />
+                                
+                                <InitFiles
+                                    setIsReadyForSubmit={(t)=>{setIsReadyForSubmit(t)}}
+                                    milestoneStatus={milestone.status}
+                                    submitForReview={submitForReview}
+                                    updateSubmitForReview={setSubmitForReview}
+                                    workId={workId}
+                                    milestone={milestone}
                                 />
 
-                                <div className="mt-[20px] border-t border-[#EAEAEA] pt-[20px]">
-                                    <div className="flex items-center">
-                                        <div className="flex items-center flex-1">
-                                            <GrAttachment size={18} color="#172B4D" />
-                                            <span className="text-base font-semibold text-[#172B4D] ml-[5px]">Work attachemnts</span>
+                                {milestone?.userFiles?.map((file:any)=>(<>
+                                    <div className="w-full flex">
+                                        <div className="flex w-[112px] bg-[#dadfe3] rounded-sm h-[80px] mb-[20px] items-center justify-center">
+                                            {isFileImage(file.type) ? 
+                                                <Image
+                                                    src={file.url}
+                                                    width={100}
+                                                    height={100}
+                                                    alt="meharba"
+                                                    className="w-full h-full object-contain"
+                                                />
+                                            : <>
+                                                <File size={27} color="#172b4d"/>
+                                            </>}
                                         </div>
-                                        <Button
-                                            variant="ghost"
-                                            className="h-[33px] text-sm text-[#172b4d] font-normal bg-[#e4e6ea] hover:bg-[#d0d4dc] m-0 "
-                                        >Upload
-                                            <Plus size={15} color="#172b4d" className="ml-[5px]"/>
-                                        </Button>
+                                        <div className="ml-[20px] flex flex-col">
+                                            <span className="text-sm text-[#172b4d] font-bold hover:underline cursor-pointer"
+                                                onClick={()=>{window.open(file.url)}}
+                                            >{file.name}</span>
+                                            <span className="font-normal text-sm text-[#44546f] mt-[2px]">Added {formatDate(file._creationTime)}</span>
+
+                                            {file?.status === "inReview" &&
+                                                <div className="mt-[5px] bg-[#ff9200] flex items-center justify-center w-fit h-[25px] rounded-full pl-[8px] pr-[8px]">
+                                                    <Clock size={14} color="white"/>
+                                                    <span className="text-xs text-white  font-semibold ml-[4px]">In Review</span>
+                                                </div>
+                                            }
+                                        </div>
                                     </div>
-
-                                    <div className="mt-[15px] flex flex-col w-full">
-                                        {[1,2,3,1,2,2,].map(()=>(<>
-                                            <div className="w-full flex group cursor-pointer">
-                                                <div className="flex w-[112px] bg-[#dadfe3] rounded-sm h-[80px] mb-[20px]">
-                                                    <Image
-                                                        src="https://charming-clownfish-726.convex.cloud/api/storage/e09d731b-32ef-437d-8904-61831f0db7eb"
-                                                        width={100}
-                                                        height={100}
-                                                        alt="meharba"
-                                                        className="w-full h-full object-contain"
-                                                    />
-                                                </div>
-
-                                                <div className="ml-[20px] flex flex-col">
-                                                    <span className="text-sm text-[#172b4d] font-bold group-hover:underline">greenpeace-facebook-ad-example-2.png</span>
-                                                    <span className="font-normal text-sm text-[#44546f] mt-[2px]">Added Aug 27, 2022 at 3:44 PM</span>
-                                                    <div className="mt-[5px] bg-[#ff9200] flex items-center justify-center w-fit h-[25px] rounded-full pl-[8px] pr-[8px]">
-                                                        <Clock size={14} color="white"/>
-                                                        <span className="text-xs text-white  font-semibold ml-[4px]">In review</span>
-                                                    </div>
-                                                </div>
+                                </>))}
+                                    
+                                {(milestone.status === "active" && isReadyForSubmit) &&
+                                    <div className="w-full bottom-[20px] left-0 bg-[#e4e6ea] sticky mt-[20px] rounded-[10px] border border-[#d6d6d6]">
+                                        <div className="p-[20px] flex items-center">
+                                            <div className="flex flex-1 pr-[70px]">
+                                                <p className="text-sm font-normal">Before submiting for review please be sure that you included all files of your finished work.</p>
                                             </div>
-                                        </>))}
-                                    </div>
-                                     
-                                </div>
-                                
-
-                                {/* <div className="mt-[15px] w-full">
-                                    <div className="w-full h-[20px] rounded-full bg-[#e7ebed] relative">
-                                        <div className="absolute top-0 left-0 w-[78%] h-[20px] rounded-l-full bg-[#007afe] flex items-center justify-center">
-                                            <span className="text-xs text-white">{'78% in progress'}</span>
-                                        </div>
-                                    </div>
-                                </div> */}
-
-                                
-
-                                
-
-                                 
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="w-[410px] h-[700px] bg-[#0000001f] rounded-r-md backdrop-blur-md">
-                    <div className="w-full h-full p-[20px] pt-[30px] flex flex-1 flex-col">
-                        <span className="text-xl text-white">Comments</span>
-                        <div className="h-fit overflow-y-scroll rounded-xl mt-[15px] flex flex-1 flex-col">
-                            {[1,11,2,3,12,3,12,3,12,3123,1,3,21,3,12,2,2,12,,2].map(()=>(<>
-                                <div className="w-full rounded-xl bg-[#00000033] mb-[10px] p-[25px] pt-[15px] pb-[15px] border border-[#343434]">
-                                    <div className="flex">
-                                        <Avatar className="w-[38px] h-[38px]  border-[1.5px] border-[#343434] -ml-[10px]">
-                                            <AvatarImage src="https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18yZzNaMjYxbk10OGdKNVFmTFFYR2RwVlpGTEsifQ" />
-                                            <AvatarFallback>ME</AvatarFallback>
-                                        </Avatar>
-                                        <div className="ml-[10px]">
                                             <div className="flex items-center">
-                                                <span className="text-base font-semibold text-white">Ristowsoft</span>
-                                                <span className="text-xs text-[#7d7d7d] ml-[7px]">19 May 2024, 10:43</span>
+                                                <Button
+                                                    onClick={()=>{
+                                                        if(checkIfAllTasksAreDone() === true){
+                                                            setSubmitForReview(true)
+                                                        }else{
+                                                            toast.error("You need to mark as done all tasks to submit for review.")
+                                                        }
+                                                    }}
+                                                >
+                                                    Submit for review
+                                                </Button>
                                             </div>
-
-                                            <p className="text-sm text-[#c4c4c4] mt-[3px]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia,
-molestiae quas vel sint commodi repudiandae consequuntur.</p>
                                         </div>
                                     </div>
-                                </div>
-                            </>))}
-                        </div>
-                        <div className="flex items-center mt-[20px]">
-                            <div className="w-full h-[45px] bg-[#00000033] rounded-full border border-[#343434] flex items-center justify-center">
-                                <Input 
-                                    placeholder="Add comment..."
-                                    className="rounded-full outline-none focus-visible:ring-0 bg-transparent pl-[20px] pr-[20px] text-base  text-white border-none placeholder:text-[#c4c4c4]"
-                                />
+                                }
                             </div>
-
-                            <div className="flex ml-[10px]">
-                                <Button 
-                                    variant="ghost"
-                                    size="icon"
-                                    className="bg-[#1dbf73] hover:bg-[#1dbf73] rounded-full flex items-center justify-center border border-[#343434] h-[45px] w-[45px]"
-                                >
-                                    <Send size={21} color="white" className="-mb-[3px] -ml-[1px]"/>
-                                </Button>
-                            </div>
-                            
                         </div>
                     </div>
                 </div>
+                
+                <CommentsInit 
+                    milestoneId={milestone?._id}
+                    members={milestone?.members}
+                />
+
             </DialogContent>
         </Dialog>
     )

@@ -11,26 +11,26 @@ interface ListFilesProps {
 
 const ListFiles: React.FC<ListFilesProps> = ({ fileList, onRemoveFile, filesUploadProgress }) => {
 
-    return ( 
-        <div className="w-full">
-          {fileList && fileList.length > 0 && (
-            <>
-              <div className="w-full flex flex-1 overflow-y-auto pb-[0px]">
-                {Array.from(fileList).map((file, index) => (
-                  <>
+  return (
+    <div className="w-full">
+      {fileList && fileList.length > 0 && (
+        <>
+         <div className="w-full flex flex-col mt-[20px]">
+            {Array.from(fileList).map((file, index) => (
+                <>
                     <FileBox
                         file={file}
                         index={index} 
                         onRemoveFile={onRemoveFile}
                         progress={filesUploadProgress[index]}
                     />
-                  </>
-                ))} 
-              </div>
-            </>
-          )}
-        </div>
-    );
+                </>
+            ))} 
+         </div>
+        </>
+      ) }
+    </div>
+  );
 };
 
 export default ListFiles;

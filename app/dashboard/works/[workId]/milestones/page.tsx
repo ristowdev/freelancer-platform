@@ -34,6 +34,7 @@ const Dashboard = ({
                          <div className="p-[30px] pr-[50px]">
                               <Timeline 
                                    milestones={milestones}
+                                   workId={params.workId}
                               />
                          </div>
                     </div>

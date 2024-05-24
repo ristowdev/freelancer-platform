@@ -14,15 +14,18 @@ interface Task {
 
 interface TasksProps {
     tasks: Task[];
+    canUpdate: boolean;
 }
 
-const Tasks = ({ tasks }: TasksProps) => {
+const Tasks = ({ tasks, canUpdate }: TasksProps) => {
     const [taskList, setTaskList] = useState(tasks);
     const [disabledCheckboxId, setDisabledCheckboxId] = useState<string | null>(null);
 
     const { mutate: updateTask, pending } = useApiMutation(api.milestones.updateTask);
 
     const handleCheckboxChange = (taskId: string, currentDoneStatus: boolean) => {
+        if(!canUpdate) return;
+        
         const newDoneStatus = !currentDoneStatus;
 
         updateTask({ taskId, done: newDoneStatus })

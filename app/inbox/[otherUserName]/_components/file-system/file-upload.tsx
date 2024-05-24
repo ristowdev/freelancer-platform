@@ -22,21 +22,21 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
 
   return (
     <div className='flex items-center'>
-      <input
-        type="file"
-        ref={fileInputRef}
-        style={{ display: 'none' }}
-        onChange={handleFileInputChange}
-        multiple  // Allow multiple file selection
-      />
-      <Button
-        size="icon"
-        variant="ghost"
-        className="hover:bg-transparent p-0 m-0 w-[20px] h-[20px] ml-[10px]"
-        onClick={handleButtonClick}
-      >
-        <Paperclip color="#74767e" size={20}/>
-      </Button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={handleFileInputChange}
+          multiple  // Allow multiple file selection
+        />
+        <Button
+          size="icon"
+          variant="ghost"
+          className="hover:bg-transparent p-0 m-0 w-[20px] h-[20px] ml-[10px]"
+          onClick={handleButtonClick}
+        >
+          <Paperclip color="#74767e" size={20}/>
+        </Button>
     </div>
   );
 };
