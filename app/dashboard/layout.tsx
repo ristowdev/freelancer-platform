@@ -5,6 +5,7 @@ interface DashboardLayoutProps {
 }
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+    
     return (
         <main className="w-full h-calc-80px">
             <div className="flex">
