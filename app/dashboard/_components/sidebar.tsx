@@ -12,12 +12,7 @@ import { cn } from "@/lib/utils";
 interface SidebarProps {
     
 };
-
-const iconStyles = {
-    size:"22",
-    color:"#868b8f"
-}
-
+ 
 const links = [
     {
         name: "Home",
@@ -78,7 +73,7 @@ const Sidebar = ({
             <div className="w-[300px] bg-[#1b1d1f] h-full fixed border-r border-[#e4e5e7] shadow-md">
                 <div className="mt-[110px] p-[10px] flex flex-col">
                     <div className="flex pl-[15px]">
-                        <Avatar className="w-[45px] h-[45px]">
+                        <Avatar className="w-[45px] h-[45px] border-[2px] border-[#ffffff30]">
                             <AvatarImage src={currentUser.profileImageUrl} alt={currentUser.username} />
                             <AvatarFallback>{currentUser.fullName[0]}</AvatarFallback>
                         </Avatar>
@@ -97,7 +92,7 @@ const Sidebar = ({
                                 <Button
                                     key={link.link}
                                     variant="ghost"
-                                    className={cn("flex items-center justify-start mb-[15px] hover:bg-[#272b31] hover:text-white text-[#868b8f] group", pathname === link.link ? "bg-[#272b31] text-white" : "")}
+                                    className={cn("flex items-center justify-start mb-[10px] hover:bg-[#272b31] hover:text-white text-[#868b8f] group h-[45px]", pathname === link.link ? "bg-[#272b31] text-white" : "")}
                                     // className={`flex items-center justify-start mb-[15px] hover:bg-[#272b31] hover:text-white text-[#868b8f] ${pathname === link.link ? "bg-[#272b31] text-white" : ""}`}
                                     onClick={() => { router.push(link.link); }}
                                 >

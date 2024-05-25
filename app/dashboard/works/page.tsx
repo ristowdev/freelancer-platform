@@ -60,9 +60,9 @@ const Dashboard = ({
                     </BreadcrumbItem> 
                     </BreadcrumbList>
                 </Breadcrumb>
-                <h1 className="h-1 font-bold text-2xl mt-[20px]">Works</h1>
-                <div className="w-full mt-[10px]">
-                    <div className="border border-[#e3e3e3] shadow-sm h-[150px] rounded-xl mt-[40px] w-full bg-white">
+                <h1 className="font-bold text-2xl mt-[20px]">Works</h1>
+                <div className="w-full mt-[0px]">
+                    <div className="border border-[#e3e3e3] shadow-sm h-[150px] rounded-xl mt-[20px] w-full bg-white">
                         <div className="flex p-[20px] h-full items-center">
                             <div className="w-[33.333%]">
                                 <div className="pl-[10px] pr-[10px] flex flex-col">
