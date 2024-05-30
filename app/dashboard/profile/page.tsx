@@ -15,6 +15,7 @@ import { api } from "@/convex/_generated/api";
 import AddLanguage from "./_components/edit/languages/add";
 import { cn } from "@/lib/utils";
 import { getLanguageLabel } from "@/utils/languages";
+import EditLanguages from "./_components/edit/languages/edit";
 // import { ComboboxDemo } from "./_components/edit/languages/add/form";
 
 interface DashboardProps {
@@ -139,13 +140,19 @@ const Dashboard = ({
                                                     <Plus color="#118a00" size={30}/>
                                                 </Button>
                                             </AddLanguage>
-                                            <Button 
-                                                variant="outline"
-                                                size="icon"
-                                                className="border-[2px] border-[#118a00] rounded-full p-[6px] m-0 w-[32px] h-[32px] ml-[15px]"   
+
+                                            {profile?.languages.length > 0 &&
+                                            <EditLanguages
+                                                profile={profile}
                                             >
-                                                <Pencil color="#118a00" size={30}/>
-                                            </Button>
+                                                <Button 
+                                                    variant="outline"
+                                                    size="icon"
+                                                    className="border-[2px] border-[#118a00] rounded-full p-[6px] m-0 w-[32px] h-[32px] ml-[15px]"   
+                                                >
+                                                    <Pencil color="#118a00" size={30}/>
+                                                </Button>
+                                            </EditLanguages> }
                                         </div>
                                     </div>
                                     <div className="mt-[10px] flex flex-col">

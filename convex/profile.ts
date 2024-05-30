@@ -128,3 +128,48 @@ export const addLanguage = mutation({
         });
     },
 });
+
+
+export const deleteLanguages = mutation({
+    args: {
+        languages: v.array(v.any()),
+    },
+    handler: async (ctx, args) => {
+
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) {
+            throw new Error("Called storeUser without authentication present");
+        }
+
+        // Check if we've already stored this identity before.
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_token", (q) =>
+                q.eq("tokenIdentifier", identity.subject)
+            )
+            .unique(); 
+
+        const profile = await ctx.db
+            .query("profile")
+            .withIndex("by_userId", (q) =>
+                q.eq("userId", user?._id as Id<"users">)
+            )
+            .unique();
+
+        if(!profile){
+            throw new Error("Profile not found");
+        }
+
+
+        const deleteLanguages = args.languages.map(async (language: any) => {
+            if(language.profileId === profile._id){
+                console.log(language)
+                await ctx.db.delete(language._id as Id<"languages">);
+            }
+        });
+
+        await Promise.all(deleteLanguages);
+
+        
+    },
+});
