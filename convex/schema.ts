@@ -21,7 +21,7 @@ export default defineSchema({
                 v.literal("admin"),
             )
         )
-    })
+    }) 
         .index("by_token", ["tokenIdentifier"]) // by clerk id
         .index("by_username", ["username"]),
     reviews: defineTable({
@@ -37,11 +37,6 @@ export default defineSchema({
         .index("by_gigId", ["gigId"]),
     skills: defineTable({
         skill: v.string(),
-        userId: v.id("users"),
-    })
-        .index("by_userId", ["userId"]),
-    languages: defineTable({
-        language: v.string(),
         userId: v.id("users"),
     })
         .index("by_userId", ["userId"]),
@@ -335,6 +330,28 @@ export default defineSchema({
         .index("by_userId", ["userId"]) 
         .index("by_clientId", ["clientId"]) 
         .index("by_milestoneId", ["milestoneId"])
-        .index("by_messageOwnerId", ["messageOwnerId"])
-    
+        .index("by_messageOwnerId", ["messageOwnerId"]),
+    profile: defineTable({
+        userId: v.id("users"),
+        hoursePerWeek: v.union(
+            v.literal("More than 30 hrs/week"),
+            v.literal("Less than 30 hrs/week"),
+            v.literal("As needed - open to offers"),
+        ),
+        title: v.string(),
+        hourlyRate: v.number(),
+        description: v.string()
+    }) 
+        .index("by_userId", ["userId"]),
+    languages: defineTable({
+        profileId: v.id("profile"),
+        language: v.string(),
+        proficiencyLevel: v.union(
+            v.literal("Basic"),
+            v.literal("Conversational"),
+            v.literal("Fluent"),
+            v.literal("Native or Bilingual"),
+        ),
+    }) 
+        .index("by_profileId", ["profileId"]),
 });

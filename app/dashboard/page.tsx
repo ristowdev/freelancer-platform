@@ -50,7 +50,7 @@ const Dashboard = ({
                         <div className="p-[20px] flex items-center">
                             <div className="flex flex-col flex-1">
                                 <span className="text-base font-semibold">Revenue</span>
-                                <span className="mt-[30px] font-bold text-3xl">{formatAmount(2740.79)}</span>
+                                <span className="mt-[30px] font-bold text-3xl">{formatAmount(12.79)}</span>
                                 <div className="mt-[10px] flex items-center">
                                     <span className="text-sm mr-[5px] text-[#7b7b7b]">1 week ago</span>
                                     {upDownCompare("down", 100)}
@@ -66,7 +66,7 @@ const Dashboard = ({
                         <div className="p-[20px] flex items-center">
                             <div className="flex flex-col flex-1">
                                 <span className="text-base font-semibold">Works</span>
-                                <span className="mt-[30px] font-bold text-3xl">1</span>
+                                <span className="mt-[30px] font-bold text-3xl">1,599</span>
                                 <div className="mt-[10px] flex items-center">
                                     <span className="text-sm mr-[5px] text-[#7b7b7b]">1 week ago</span>
                                     {upDownCompare("up", 35.9)}
@@ -82,7 +82,7 @@ const Dashboard = ({
                         <div className="p-[20px] flex items-center">
                             <div className="flex flex-col flex-1">
                                 <span className="text-base font-semibold">Finished</span>
-                                <span className="mt-[30px] font-bold text-3xl">0</span>
+                                <span className="mt-[30px] font-bold text-3xl">4,059</span>
                                 <div className="mt-[10px] flex items-center">
                                     <span className="text-sm mr-[5px] text-[#7b7b7b]">1 week ago</span>
                                     {upDownCompare("up", 100)}
@@ -101,7 +101,7 @@ const Dashboard = ({
                             <div className="flex flex-col">
                                 <span className="text-base font-semibold">Last week revenue</span>
                                 <div className="flex items-center mt-[5px]">
-                                    <span className="font-bold text-2xl">{formatAmount(1095.11)}</span>
+                                    <span className="font-bold text-2xl">{formatAmount(23.11)}</span>
                                     <div className="ml-[5px] flex items-center mt-[5px]">
                                         {upDownCompare("down", 100)}
                                     </div>

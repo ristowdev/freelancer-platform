@@ -5,7 +5,7 @@ import { FaListCheck } from "react-icons/fa6";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from "next/navigation";
-import { Brain, BriefcaseBusiness, CircleDollarSign, Home, Mail } from "lucide-react";
+import { Brain, BriefcaseBusiness, CircleDollarSign, Home, Mail, UserRound } from "lucide-react";
 import { LuMilestone } from "react-icons/lu";
 import { cn } from "@/lib/utils";
 
@@ -33,21 +33,16 @@ const links = [
         name: "Inbox",
         link: "/inbox",
         icon: Mail
-    },
-    {
-        name: "Milestones",
-        link: "/dashboard/milestones",
-        icon: LuMilestone
-    },
+    }, 
     {
         name: "Payouts",
         link: "/dashboard/payouts",
         icon: CircleDollarSign
     },
     {
-        name: "Skills",
-        link: "/dashboard/skills",
-        icon: Brain
+        name: "Profile",
+        link: "/dashboard/profile",
+        icon: UserRound
     }
 ];
 

@@ -158,26 +158,26 @@ export const getUserByUsername = query({
 });
 
 
-export const getLanguagesByUsername = query({
-    args: { username: v.string() },
-    handler: async (ctx, args) => {
-        const user = await ctx.db
-            .query("users")
-            .withIndex("by_username", (q) => q.eq("username", args.username))
-            .unique();
+// export const getLanguagesByUsername = query({
+//     args: { username: v.string() },
+//     handler: async (ctx, args) => {
+//         const user = await ctx.db
+//             .query("users")
+//             .withIndex("by_username", (q) => q.eq("username", args.username))
+//             .unique();
 
-        if (!user) {
-            throw new Error("User not found");
-        }
+//         if (!user) {
+//             throw new Error("User not found");
+//         }
 
-        const languages = await ctx.db
-            .query("languages")
-            .withIndex("by_userId", (q) => q.eq("userId", user._id))
-            .collect();
+//         const languages = await ctx.db
+//             .query("languages")
+//             .withIndex("by_userId", (q) => q.eq("userId", user._id))
+//             .collect();
 
-        return languages;
-    },
-});
+//         return languages;
+//     },
+// });
 
 export const getCountryByUsername = query({
     args: { username: v.string() },

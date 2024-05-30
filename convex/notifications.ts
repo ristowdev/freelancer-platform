@@ -13,8 +13,7 @@ export const get = query({
         if (!identity) {
             throw new Error("Unauthorized");
         }
-
-
+ 
         const user = await ctx.db
             .query("users")
             .withIndex("by_token", (q) =>
