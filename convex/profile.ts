@@ -52,11 +52,12 @@ export const getDetails = query({
         const allProjectsInPortfolio = await ctx.db
             .query("portfolio")
             .withIndex("by_profileId", (q) => q.eq("profileId", profile?._id))
-            .collect();
+            .collect(); 
 
-        // const filesByPortfolioId = await ctx.db.query("files")
-        //         .withIndex("by_messageId", (q) => q.eq("messageId", message._id))
-        //         .collect(); 
+        const allSkills = await ctx.db
+            .query("profileSkills")
+            .withIndex("by_profileId", (q) => q.eq("profileId", profile?._id))
+            .collect(); 
             
         const allProjectsInPortfolioWithFiles = await Promise.all(allProjectsInPortfolio.map(async (portfolio) => {
 
@@ -82,7 +83,8 @@ export const getDetails = query({
         return {
             ...profile,
             languages,
-            portfolioProjects:allProjectsInPortfolioWithFiles
+            portfolioProjects:allProjectsInPortfolioWithFiles,
+            skills:allSkills
         }
     },
 });
@@ -462,5 +464,86 @@ export const deletePortfolioProject = mutation({
         await ctx.db.delete(portfolioProjects?._id as Id<"portfolio">);
         
         return true;
+    },
+});
+
+export const addNewTask = mutation({
+    args: {
+        name: v.string(),
+    },
+    handler: async (ctx, args) => {
+
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) {
+            throw new Error("Called storeUser without authentication present");
+        }
+
+        // Check if we've already stored this identity before.
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_token", (q) =>
+                q.eq("tokenIdentifier", identity.subject)
+            )
+            .unique(); 
+
+        const profile = await ctx.db
+            .query("profile")
+            .withIndex("by_userId", (q) =>
+                q.eq("userId", user?._id as Id<"users">)
+            )
+            .unique();
+        
+        if (!profile) {
+            throw new Error("Couldn't authenticate user");
+        }
+
+        await ctx.db.insert("profileSkills", {
+            profileId: profile._id,
+            name: args.name,
+        }); 
+ 
+    },
+});
+
+export const deleteSkills = mutation({
+    args: {
+        skills: v.array(v.any()),
+    },
+    handler: async (ctx, args) => {
+
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) {
+            throw new Error("Called storeUser without authentication present");
+        }
+
+        // Check if we've already stored this identity before.
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_token", (q) =>
+                q.eq("tokenIdentifier", identity.subject)
+            )
+            .unique(); 
+
+        const profile = await ctx.db
+            .query("profile")
+            .withIndex("by_userId", (q) =>
+                q.eq("userId", user?._id as Id<"users">)
+            )
+            .unique();
+
+        if(!profile){
+            throw new Error("Profile not found");
+        }
+
+
+        const _deleteSkills = args.skills.map(async (skill: any) => {
+            if(skill.profileId === profile._id){
+                await ctx.db.delete(skill._id as Id<"profileSkills">);
+            }
+        });
+
+        await Promise.all(_deleteSkills);
+
+        
     },
 });

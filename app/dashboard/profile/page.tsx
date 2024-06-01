@@ -26,6 +26,8 @@ import { MdOutlineWorkOutline } from "react-icons/md";
 import Image from "next/image";
 import PreviewProject from "./_components/edit/portfolio/preview";
 import DeletePortfolioProject from "./_components/edit/portfolio/delete";
+import AddSkill from "./_components/edit/skills/add";
+import EditSkills from "./_components/edit/skills/edit";
 
 interface DashboardProps {
     
@@ -398,9 +400,9 @@ const Dashboard = ({
                             <div className="mt-[10px] border-t border-[#e3e3e3]">
                                 <div className="p-[30px]">
                                     <div className="flex">
-                                        <div className="flex flex-1 items-center">
+                                        <div className="flex flex-1 flex-col">
                                             <span className="text-2xl font-medium">Work history</span>
-                                             
+                                            <p className="text-sm mt-[10px]">No work history yet.</p>
                                         </div> 
                                     </div>
                                 </div>
@@ -414,21 +416,38 @@ const Dashboard = ({
                                              
                                         </div> 
                                         <div className="flex items-center">
-                                            <Button 
-                                                variant="outline"
-                                                size="icon"
-                                                className="border-[2px] border-[#118a00] rounded-full p-[6px] m-0 w-[32px] h-[32px] ml-[10px]"   
+                                            <AddSkill 
+                                                profile={profile}
                                             >
-                                                <Pencil color="#118a00" size={30}/>
-                                            </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="icon"
+                                                    className="border-[2px] border-[#118a00] rounded-full p-[4px] m-0 w-[32px] h-[32px]"   
+                                                >
+                                                    <Plus color="#118a00" size={30}/>
+                                                </Button> 
+                                            </AddSkill>
+
+                                            <EditSkills
+                                                profile={profile}
+                                            >
+                                                <Button 
+                                                    variant="outline"
+                                                    size="icon"
+                                                    className="border-[2px] border-[#118a00] rounded-full p-[6px] m-0 w-[32px] h-[32px] ml-[10px]"   
+                                                >
+                                                    <Pencil color="#118a00" size={30}/>
+                                                </Button>
+                                            </EditSkills>
+
                                         </div>
                                     </div>
                                     <div className="mt-[15px]">
                                         <div className="flex flex-wrap">
-                                            {["Web UI","PDF to HTML","AI","ChatGPT","AI Books"].map((skill: string)=> (<>
-                                                <div className="p-[4px] pl-[12px] pr-[12px] rounded-full bg-[#E9E9E9] mr-[5px]">
+                                            {profile?.skills.map((skill: any)=> (<>
+                                                <div className="p-[4px] pl-[12px] pr-[12px] rounded-full bg-[#E9E9E9] mr-[5px] mb-[10px]">
                                                     <span className="text-sm text-[#676767] font-medium">
-                                                        {skill}
+                                                        {skill.name}
                                                     </span>    
                                                 </div>
                                             </>))}
@@ -444,20 +463,30 @@ const Dashboard = ({
                     <div className="w-full mt-[20px] bg-white border border-[#e3e3e3] shadow-sm rounded-xl">
                         <div className="p-[30px] flex flex-col">
                             <div className="flex">
-                                <div className="flex flex-1 items-center">
-                                    <div className="flex flex-col">
+                                <div className="flex flex-1 items-center w-full">
+                                    <div className="flex flex-col w-full">
                                         <span className="text-2xl font-medium">Testimonials</span>
                                         <span className="text-base font-medium">Endorsements from past clients</span>
+
+                                        <div className="w-full mt-[70px] flex justify-center items-center flex-col">
+                                            <Image 
+                                                src="/notestimonials.png"
+                                                width={170}
+                                                height={170}
+                                                alt=""
+                                            />
+                                            <span className="text-base text-black font-medium mt-[30px]">Here, you will see testimonials from your clients.</span>
+                                        </div>
                                     </div>
                                 </div> 
-                                <div className="flex items-center">
-                                    <Button
+                                <div className="flex items-start">
+                                    {/* <Button
                                         variant="outline"
                                         size="icon"
                                         className="border-[2px] border-[#118a00] rounded-full p-[4px] m-0 w-[32px] h-[32px]"   
                                     >
                                         <Plus color="#118a00" size={30}/>
-                                    </Button> 
+                                    </Button>  */}
                                 </div>
                             </div>
                             <div className="mt-[15px]">

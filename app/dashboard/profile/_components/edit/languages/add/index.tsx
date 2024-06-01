@@ -24,7 +24,7 @@ const AddLanguage = ({
                 context={<Context
                     handleCloseCustom={handleCloseCustom}
                     profile={profile}
-                />}
+                />} 
             >
                 {children}
             </EditModal>

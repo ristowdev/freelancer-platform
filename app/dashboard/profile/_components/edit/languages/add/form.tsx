@@ -217,7 +217,7 @@ export function ModalForm({
                 )}
             />
             </div>
-            <div className="w-full flex justify-end pb-[20px]">
+            <div className="w-full flex justify-end pb-[20px] absolute bottom-[10px] right-[30px]">
                     <Button 
                         type="button" 
                         variant="link" 

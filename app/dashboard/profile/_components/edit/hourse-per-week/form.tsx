@@ -64,54 +64,55 @@ export function ModalForm({
     return (
         <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6 flex flex-col h-full">
-            <div className="flex flex-1">
-            <FormField
-            control={form.control}
-            name="type"
-            render={({ field }) => (
-                <FormItem className="space-y-1">
-                <FormControl>
-                    <RadioGroup
-                    onValueChange={(value) => {
-                        field.onChange(value);
-                        handleRadioChange(); // Call handleRadioChange on radio group change
-                    }}
-                    defaultValue={field.value}
-                    className="flex flex-col space-y-3"
-                    >   
+            <div className="flex">
+                <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                    <FormItem className="space-y-1">
+                    <FormControl>
+                        <RadioGroup
+                        onValueChange={(value) => {
+                            field.onChange(value);
+                            handleRadioChange(); // Call handleRadioChange on radio group change
+                        }}
+                        defaultValue={field.value}
+                        className="flex flex-col space-y-3"
+                        >   
 
-                        <FormItem className="flex space-x-3 space-y-0 items-center">
-                            <FormControl className="">
-                                <RadioGroupItem value="More than 30 hrs/week"  className="w-[24px] h-[24px]"/>
-                            </FormControl>
-                            <FormLabel className="text-base font-medium text-[#222325]">
-                                More than 30 hrs/week
-                            </FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-3 space-y-0 mt-[50px]">
-                            <FormControl>
-                                <RadioGroupItem value="Less than 30 hrs/week" className="w-[24px] h-[24px]" />
-                            </FormControl>
-                            <FormLabel className="text-base font-medium text-[#222325]">
-                                Less than 30 hrs/week
-                            </FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-3 space-y-0">
-                            <FormControl>
-                            <RadioGroupItem value="As needed - open to offers" className="w-[24px] h-[24px]"/>
-                            </FormControl>
-                            <FormLabel className="text-base font-medium text-[#222325]">
-                                As needed - open to offers
-                            </FormLabel>
-                        </FormItem> 
-                    </RadioGroup>
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
+                            <FormItem className="flex space-x-3 space-y-0 items-center">
+                                <FormControl className="">
+                                    <RadioGroupItem value="More than 30 hrs/week"  className="w-[24px] h-[24px]"/>
+                                </FormControl>
+                                <FormLabel className="text-base font-medium text-[#222325]">
+                                    More than 30 hrs/week
+                                </FormLabel>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-3 space-y-0 mt-[50px]">
+                                <FormControl>
+                                    <RadioGroupItem value="Less than 30 hrs/week" className="w-[24px] h-[24px]" />
+                                </FormControl>
+                                <FormLabel className="text-base font-medium text-[#222325]">
+                                    Less than 30 hrs/week
+                                </FormLabel>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-3 space-y-0">
+                                <FormControl>
+                                <RadioGroupItem value="As needed - open to offers" className="w-[24px] h-[24px]"/>
+                                </FormControl>
+                                <FormLabel className="text-base font-medium text-[#222325]">
+                                    As needed - open to offers
+                                </FormLabel>
+                            </FormItem> 
+                        </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
             </div>
-            <div className="w-full flex justify-end pt-[20px]">
+            {/* <div className="w-full flex justify-end pt-[20px] absolute bottom-[30px] right-[30px]"> */}
+            <div className="w-full flex justify-end mt-[20px]">
                 <Button 
                     type="button" 
                     variant="link" 

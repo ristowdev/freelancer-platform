@@ -374,4 +374,9 @@ export default defineSchema({
         .index("by_temporaryId", ["temporaryId"]) 
         .index("by_portfolioId", ["portfolioId"]) 
         .index("by_profileId", ["profileId"]),
+    profileSkills: defineTable({
+        profileId: v.id("profile"),
+        name: v.string(),
+    })
+        .index("by_profileId", ["profileId"]),
 });

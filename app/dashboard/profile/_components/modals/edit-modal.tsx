@@ -42,8 +42,8 @@ const EditModal = ({
                 <DialogTrigger asChild>
                     {children}
                 </DialogTrigger>
-                <DialogContent className={cn("max-w-[750px] sm:rounded-2xl sm:p-0 p-0", hFit === true ? "h-fit" : " h-[700px] ")}>
-                    <div className="w-full h-full flex flex-1 flex-col overflow-y-scroll">
+                <DialogContent className={cn("max-w-[750px] sm:rounded-2xl sm:p-0 p-0 ", hFit === true ? "h-fit" : " h-[700px] ")}>
+                    <div className={cn("w-full h-full flex-col", hFit === true ? "" : "overflow-y-scroll")}>
                         <DialogHeader>
                             {!noSticky &&
                             <DialogTitle className="text-4xl sticky top-0 left-0 bg-white pb-[20px] rounded-xl pl-[30px] pr-[30px] pt-[30px]">

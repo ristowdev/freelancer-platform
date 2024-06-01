@@ -1,5 +1,5 @@
 import { useState } from "react";
-import EditModal from "../../modals/edit-modal";
+import EditModal from "../../../modals/edit-modal";
 import Context from "./context";
 
 interface HoursePerWeekProps {
@@ -7,7 +7,7 @@ interface HoursePerWeekProps {
     profile: any;
 }
 
-const HoursePerWeek = ({ 
+const AddSkill = ({ 
     children,
     profile
 }: HoursePerWeekProps) => {
@@ -18,15 +18,14 @@ const HoursePerWeek = ({
     return (
        <>
             <EditModal
-                title="Availability"
+                title="Add new skill"
                 setClose={setClose}
                 close={close}
-                context={<Context 
+                context={<Context
                     handleCloseCustom={handleCloseCustom}
                     profile={profile}
                 />}
                 hFit={true}
-                noSticky={true}
             >
                 {children}
             </EditModal>
@@ -34,4 +33,4 @@ const HoursePerWeek = ({
     );
 };
 
-export default HoursePerWeek;
+export default AddSkill;

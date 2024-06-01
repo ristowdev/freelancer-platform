@@ -11,28 +11,27 @@ interface LanguageListProps {
   profile: any;
 }
 
-interface Language {
-  language: string;
-  proficiencyLevel: string;
+interface Skill {
+  _id: string;
+  name: string;
 }
 
-function LanguageList({ handleCloseCustom, profile }: LanguageListProps) {
+function SkillsList({ handleCloseCustom, profile }: LanguageListProps) {
     const [languagesToDelete, setLanguagesToDelete] = useState<any[]>([]);
 
     const {
-        mutate: _deleteLanguages,
+        mutate: _deleteSkills,
         pending
-    } = useApiMutation(api.profile.deleteLanguages)
+    } = useApiMutation(api.profile.deleteSkills)
 
     const handleDeleteLanguage = (language: any) => {
         setLanguagesToDelete(prevState => [...prevState, language]);
     };
 
     const handleSave = () => {
-        console.log('Languages to delete:', languagesToDelete);
         // Call API or perform any other action here
-        _deleteLanguages({
-            languages: languagesToDelete,
+        _deleteSkills({
+            skills: languagesToDelete,
         })
             .then(() => {
                 handleCloseCustom()
@@ -46,39 +45,29 @@ function LanguageList({ handleCloseCustom, profile }: LanguageListProps) {
         <div className="flex flex-col w-full h-full">
         <div className="w-full flex flex-1">
             <div className="w-full">
-                <div className="w-full flex">
-                <div className="w-[45%]">
-                <span className="text-base font-medium text-black">Language</span>
-                </div>
-                <div className="w-[45%] ml-[30px]">
-                <span className="text-base font-medium text-black">Proficiency level</span>
-                </div>
+            <div className="w-full flex">
+                <div className="w-full">
+                <span className="text-base font-medium text-black">Skill</span>
+                </div> 
                 <div className="w-[10%] flex justify-end"></div>
             </div>
-            {profile?.languages
-                .filter((language: Language) => !languagesToDelete.some(lang => lang.language === language.language))
-                .map((language: Language) => (
-                <div className="flex mt-[20px] border-b border-[#d9d9d9] pb-[20px]" key={language.language}>
-                    <div className="w-[45%]">
-                    <Input
-                        value={getLanguageLabel(language.language)}
-                        readOnly
-                        className="focus focus-visible:ring-0 text-[#a5a5a5] bg-[#e9e9e9] border border-[#e9e9e9] "
-                    />
-                    </div>
-                    <div className="w-[45%] ml-[30px]">
-                    <Input
-                        value={language.proficiencyLevel}
-                        readOnly
-                        className="focus focus-visible:ring-0 text-[#a5a5a5] bg-[#e9e9e9] border border-[#e9e9e9] "
-                    />
+            {profile?.skills
+                .filter((skill: Skill) => !languagesToDelete.some(_skill => _skill.name === skill.name))
+                .map((skill: Skill) => (
+                <div className="flex mt-[20px] border-b border-[#d9d9d9] pb-[20px]" key={skill._id}>
+                    <div className="w-full">
+                        <Input
+                            value={skill.name}
+                            readOnly
+                            className="focus focus-visible:ring-0 text-[#a5a5a5] bg-[#e9e9e9] border border-[#e9e9e9] "
+                        /> 
                     </div>
                     <div className="w-[10%] flex justify-end">
                     <Button
                         variant="outline"
                         size="icon"
                         className="border-[2px] border-[#118a00] rounded-full p-[6px] m-0 w-[32px] h-[32px] ml-[15px]"
-                        onClick={() => handleDeleteLanguage(language)}
+                        onClick={() => handleDeleteLanguage(skill)}
                     >
                         <Trash color="#118a00" size={30} />
                     </Button>
@@ -109,4 +98,4 @@ function LanguageList({ handleCloseCustom, profile }: LanguageListProps) {
     );
 }
 
-export default LanguageList;
+export default SkillsList;
