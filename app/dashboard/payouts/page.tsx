@@ -95,15 +95,15 @@ const Dashboard = ({
                                 <div className="pl-[30px] pr-[10px] flex flex-col">
                                     <span className="text-base font-semibold">Previus payout</span>
                                     <div className="flex items-center">
-                                        <span className="mt-[10px] font-bold text-3xl">{formatAmount(50)}</span>
-                                        <div className="w-fit h-[25px] bg-[#E2FFEA] flex items-center justify-center ml-[10px] mt-[10px] rounded-sm">
+                                        <span className="mt-[10px] font-bold text-3xl">{formatAmount(0)}</span>
+                                        <div className="w-fit h-[25px] bg-[#E2FFEA] flex items-center justify-center ml-[10px] mt-[10px] rounded-sm opacity-0">
                                             <span className="text-[#4BCC69] text-sm font-semibold pl-[10px] pr-[10px]">
                                                 Paid
                                             </span>
                                         </div>
                                     </div>
                                     <div className="mt-[10px] flex items-center">
-                                        <span className="text-sm mr-[5px] text-[#7b7b7b]">Apr 10, 2024</span>
+                                        <span className="text-sm mr-[5px] text-[#7b7b7b] opacity-0">Apr 10, 2024</span>
                                     </div>
                                 </div>
                             </div>

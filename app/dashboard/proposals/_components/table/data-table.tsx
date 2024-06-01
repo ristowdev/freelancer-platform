@@ -36,14 +36,14 @@ export function DataTable<TData, TValue>({
 
     return (
         <div>
-            <div className="rounded-md p-0">
+            <div className="rounded-md border">
                 <Table>
-                    <TableHeader className="p-0">
+                    <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id} className="text-center p-0">
+                                        <TableHead key={header.id} className="text-center">
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
@@ -64,7 +64,7 @@ export function DataTable<TData, TValue>({
                                     data-state={row.getIsSelected() && "selected"}
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id} className="text-center pl-0">
+                                        <TableCell key={cell.id} className="text-center">
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
@@ -80,7 +80,24 @@ export function DataTable<TData, TValue>({
                     </TableBody>
                 </Table>
             </div>
-           
+            <div className="flex items-center justify-end space-x-2 py-4">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.previousPage()}
+                    disabled={!table.getCanPreviousPage()}
+                >
+                    Previous
+                </Button>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.nextPage()}
+                    disabled={!table.getCanNextPage()}
+                >
+                    Next
+                </Button>
+            </div>
         </div>
     )
 }

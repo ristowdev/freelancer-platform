@@ -10,7 +10,7 @@ import { ConfirmModal } from '@/components/confirm-modal';
 import { toast } from 'sonner';
 
 interface ProjectsActionsCellProps {
-    pId: string;
+    pId: Id<"projects">;
     status: string,
 }
 

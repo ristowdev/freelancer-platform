@@ -69,8 +69,8 @@ const Dashboard = ({
                                     <span className="text-base font-semibold">Revenue</span>
                                     <span className="mt-[10px] font-bold text-3xl">{formatAmount(2740.79)}</span>
                                     <div className="mt-[10px] flex items-center">
-                                        <span className="text-sm mr-[5px] text-[#7b7b7b]">1 week ago</span>
-                                        {upDownCompare("down", 100)}
+                                        <span className="text-sm mr-[5px] text-[#7b7b7b]">lat 30 days</span>
+                                        {upDownCompare("up", 100)}
                                     </div>
                                 </div>
                                 
@@ -80,9 +80,9 @@ const Dashboard = ({
                             <div className="w-[33.333%] border-l border-[#e3e3e3] h-full">
                                 <div className="pl-[30px] pr-[10px] flex flex-col">
                                     <span className="text-base font-semibold">In Progress</span>
-                                    <span className="mt-[10px] font-bold text-3xl">1</span>
+                                    <span className="mt-[10px] font-bold text-3xl">{getAllWorks.filter(work => work.status === "inProgress").length}</span>
                                     <div className="mt-[10px] flex items-center">
-                                        <span className="text-sm mr-[5px] text-[#7b7b7b]">1 week ago</span>
+                                        <span className="text-sm mr-[5px] text-[#7b7b7b]">lat 30 days</span>
                                         {upDownCompare("up", 100)}
                                     </div>
                                 </div>
@@ -91,9 +91,9 @@ const Dashboard = ({
                             <div className="w-[33.333%] border-l border-[#e3e3e3] h-full">
                                 <div className="pl-[30px] pr-[10px] flex flex-col">
                                     <span className="text-base font-semibold">Done</span>
-                                    <span className="mt-[10px] font-bold text-3xl">0</span>
+                                    <span className="mt-[10px] font-bold text-3xl">{getAllWorks.filter(work => work.status === "finished").length}</span>
                                     <div className="mt-[10px] flex items-center">
-                                        <span className="text-sm mr-[5px] text-[#7b7b7b]">1 week ago</span>
+                                        <span className="text-sm mr-[5px] text-[#7b7b7b]">lat 30 days</span>
                                         {upDownCompare("up", 100)}
                                     </div>
                                 </div>
@@ -101,9 +101,9 @@ const Dashboard = ({
                             <div className="w-[33.333%] border-l border-[#e3e3e3] h-full">
                                 <div className="pl-[30px] pr-[10px] flex flex-col">
                                     <span className="text-base font-semibold">Total works</span>
-                                    <span className="mt-[10px] font-bold text-3xl">1</span>
+                                    <span className="mt-[10px] font-bold text-3xl">{getAllWorks.length}</span>
                                     <div className="mt-[10px] flex items-center">
-                                        <span className="text-sm mr-[5px] text-[#7b7b7b]">1 week ago</span>
+                                        <span className="text-sm mr-[5px] text-[#7b7b7b]">lat 30 days</span>
                                         {upDownCompare("up", 100)}
                                     </div>
                                 </div>
