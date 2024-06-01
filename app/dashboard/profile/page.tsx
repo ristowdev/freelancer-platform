@@ -16,6 +16,11 @@ import AddLanguage from "./_components/edit/languages/add";
 import { cn } from "@/lib/utils";
 import { getLanguageLabel } from "@/utils/languages";
 import EditLanguages from "./_components/edit/languages/edit";
+import EditTitle from "./_components/edit/title";
+import EditHourlyRate from "./_components/edit/hourly-rate";
+import ProfileOverview from "./_components/edit/profile-overview";
+import ReadMore from "./_components/read-more";
+import AddProjectInPortfolio from "./_components/edit/portfolio/add";
 // import { ComboboxDemo } from "./_components/edit/languages/add/form";
 
 interface DashboardProps {
@@ -163,7 +168,7 @@ const Dashboard = ({
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col mt-[40px]">
+                                {/* <div className="flex flex-col mt-[40px]">
     
                                     <div className="flex items-center">
                                         <div className="flex flex-1">
@@ -178,13 +183,10 @@ const Dashboard = ({
                                                 <Plus color="#118a00" size={30}/>
                                             </Button> 
                                         </div>
-                                    </div>
-                                    {/* <div className="mt-[10px]">
-                                        <span className="text-base font-medium text-[#181818]">English: <span className="text-[#676767]">Native or Bilingual</span></span>
-                                    </div> */}
-                                </div>
+                                    </div> 
+                                </div> */}
 
-                                <div className="flex flex-col mt-[40px]">
+                                {/* <div className="flex flex-col mt-[40px]">
     
                                     <div className="flex items-center">
                                         <div className="flex flex-1">
@@ -245,14 +247,38 @@ const Dashboard = ({
                                             </Button>
                                         </div>
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                         <div className="w-[65%] ml-[20px] bg-white border border-[#e3e3e3] shadow-sm rounded-xl">
                             <div className="p-[30px] w-full flex flex-col">
                                 <div className="flex">
-                                    <div className="flex flex-1 items-center">
-                                        <span className="text-2xl font-medium">Full Stack Developer</span>
+                                    
+                                    <div className="flex flex-1 items-center relative">
+                                        <span className="text-2xl font-medium w-[90%] pl-[5px]">{profile.title}
+                                        <span className="absolute pl-[7px]">
+
+                                            <EditTitle
+                                                profile={profile}
+                                            >
+                                                <Button 
+                                                    variant="outline"
+                                                    size="icon"
+                                                    className="border-[2px] border-[#118a00] rounded-full p-[6px] m-0 w-[32px] h-[32px]"   
+                                                >
+                                                    <Pencil color="#118a00" size={30}/>
+                                                </Button>
+                                            </EditTitle>
+                                        </span>
+
+                                        </span>
+                                        
+                                    </div>
+                                    <div className="flex items-start">
+                                    <span className="text-xl font-medium">{formatAmount(profile.hourlyRate)}/hr</span>
+                                    <EditHourlyRate
+                                        profile={profile}
+                                    >
                                         <Button 
                                             variant="outline"
                                             size="icon"
@@ -260,16 +286,7 @@ const Dashboard = ({
                                         >
                                             <Pencil color="#118a00" size={30}/>
                                         </Button>
-                                    </div>
-                                    <div className="flex items-center">
-                                    <span className="text-xl font-medium">$35.00/hr</span>
-                                    <Button 
-                                        variant="outline"
-                                        size="icon"
-                                        className="border-[2px] border-[#118a00] rounded-full p-[6px] m-0 w-[32px] h-[32px] ml-[10px]"   
-                                    >
-                                        <Pencil color="#118a00" size={30}/>
-                                    </Button>
+                                    </EditHourlyRate>
                                     <Button 
                                         variant="outline"
                                         size="icon"
@@ -283,30 +300,25 @@ const Dashboard = ({
                                 <div className="mt-[40px] flex">
                                     <div>
 
-                                        <p className="text-base">
-                                        I am a highly skilled and experienced full stack developer with 3 years of experience in the field. I have a strong background in developing and maintaining web applications, and have a proven track record of delivering high-quality, reliable, and scalable solutions. My expertise includes:
-    <br/>
-    <br/>
-    1. Strong experience in developing and maintaining web applications using Node.js and React.<br/>
-    2. Familiarity with Next.js, a framework for server-rendered React apps.<br/>
-    3. Strong understanding of TypeScript and JavaScript and experience with modern frontend frameworks such as React.
-                                        </p>
-                                        <Button
-                                            variant="link"
-                                            className="m-0 p-0 text-base text-[#108A00] underline h-fit w-fit"
-                                        >
-                                            more
-                                        </Button>
+                                        <ReadMore 
+                                            text={profile.description}
+                                            splitStart={0}
+                                            splitEnd={500}
+                                        />
                                     
                                     </div>
                                     <div className="ml-[5px]">
-                                        <Button 
-                                            variant="outline"
-                                            size="icon"
-                                            className="border-[2px] border-[#118a00] rounded-full p-[6px] m-0 w-[32px] h-[32px] ml-[10px]"   
+                                        <ProfileOverview
+                                            profile={profile}
                                         >
-                                            <Pencil color="#118a00" size={30}/>
-                                        </Button>
+                                            <Button 
+                                                variant="outline"
+                                                size="icon"
+                                                className="border-[2px] border-[#118a00] rounded-full p-[6px] m-0 w-[32px] h-[32px] ml-[10px]"   
+                                            >
+                                                <Pencil color="#118a00" size={30}/>
+                                            </Button>
+                                        </ProfileOverview>
                                     </div>
                                 </div>
 
@@ -321,13 +333,17 @@ const Dashboard = ({
                                              
                                         </div>
                                         <div className="flex items-center">
-                                            <Button
-                                                variant="outline"
-                                                size="icon"
-                                                className="border-[2px] border-[#118a00] rounded-full p-[4px] m-0 w-[32px] h-[32px]"   
+                                            <AddProjectInPortfolio
+                                                profile={profile}
                                             >
-                                                <Plus color="#118a00" size={30}/>
-                                            </Button> 
+                                                <Button
+                                                    variant="outline"
+                                                    size="icon"
+                                                    className="border-[2px] border-[#118a00] rounded-full p-[4px] m-0 w-[32px] h-[32px]"   
+                                                >
+                                                    <Plus color="#118a00" size={30}/>
+                                                </Button> 
+                                            </AddProjectInPortfolio>
                                         </div>
                                     </div>
                                 </div>
@@ -405,7 +421,7 @@ const Dashboard = ({
                         </div>
                     </div>
 
-                    <div className="w-full mt-[20px] bg-white border border-[#e3e3e3] shadow-sm rounded-xl">
+                    {/* <div className="w-full mt-[20px] bg-white border border-[#e3e3e3] shadow-sm rounded-xl">
                         <div className="p-[30px] flex flex-col">
                             <div className="flex">
                                 <div className="flex flex-1 items-center">
@@ -427,9 +443,9 @@ const Dashboard = ({
                                
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
-                    <div className="w-full mt-[20px] bg-white border border-[#e3e3e3] shadow-sm rounded-xl">
+                    {/* <div className="w-full mt-[20px] bg-white border border-[#e3e3e3] shadow-sm rounded-xl">
                         <div className="p-[30px] flex flex-col">
                             <div className="flex">
                                 <div className="flex flex-1 items-center">
@@ -451,9 +467,9 @@ const Dashboard = ({
                                
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
-                    <div className="w-full mt-[20px] bg-white border border-[#e3e3e3] shadow-sm rounded-xl">
+                    {/* <div className="w-full mt-[20px] bg-white border border-[#e3e3e3] shadow-sm rounded-xl">
                         <div className="p-[30px] flex flex-col">
                             <div className="flex">
                                 <div className="flex flex-1 items-center">
@@ -475,7 +491,7 @@ const Dashboard = ({
                                
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
                 </div> 
             </div>

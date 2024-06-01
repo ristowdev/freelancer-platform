@@ -65,29 +65,29 @@ export default defineSchema({
             searchField: "title",
         }),
     projects: defineTable({
-            title: v.string(),
-            slug: v.string(),
-            experienceLevel: v.string(),
-            paymentVerified: v.optional(v.boolean()),
-            location: v.string(),
-            priceType: v.string(),
-            price: v.number(),
-            tags: v.array(v.string()),
-            descriptionShort: v.string(),
-            descriptionLong: v.string(),
-            // categorySlug: v.string(),
-            categoryId: v.id("categories"),
-            sellerId: v.id("users"),
-            published: v.optional(v.boolean()),
-            clicks: v.number(),
-        })
-            .index("by_sellerId", ["sellerId"])
-            .index("by_categoryId", ["categoryId"])
-            .index("by_published", ["published"])
-            .index("by_slug", ["slug"])
-            .searchIndex("search_title", {
-                searchField: "title",
-            }),
+        title: v.string(),
+        slug: v.string(),
+        experienceLevel: v.string(),
+        paymentVerified: v.optional(v.boolean()),
+        location: v.string(),
+        priceType: v.string(),
+        price: v.number(),
+        tags: v.array(v.string()),
+        descriptionShort: v.string(),
+        descriptionLong: v.string(),
+        // categorySlug: v.string(),
+        categoryId: v.id("categories"),
+        sellerId: v.id("users"),
+        published: v.optional(v.boolean()),
+        clicks: v.number(),
+    })
+        .index("by_sellerId", ["sellerId"])
+        .index("by_categoryId", ["categoryId"])
+        .index("by_published", ["published"])
+        .index("by_slug", ["slug"])
+        .searchIndex("search_title", {
+            searchField: "title",
+        }),
     proposals: defineTable({
         projectId: v.id("projects"),
         userId: v.id("users"),
@@ -353,5 +353,25 @@ export default defineSchema({
             v.literal("Native or Bilingual"),
         ),
     }) 
+        .index("by_profileId", ["profileId"]),
+    portfolio: defineTable({
+        profileId: v.id("profile"), 
+        projectTitle: v.string(),
+        role: v.string(),
+        description: v.string(),
+        skills: v.array(v.any())
+    }) 
+        .index("by_profileId", ["profileId"]),
+    portfolioFiles: defineTable({
+        name: v.string(),
+        type: v.string(),
+        size: v.optional(v.string()),
+        fileId: v.id("_storage"),
+        temporaryId: v.string(),
+        portfolioId: v.optional(v.id("portfolio")),
+        profileId: v.id("profile"),
+    })
+        .index("by_temporaryId", ["temporaryId"]) 
+        .index("by_portfolioId", ["portfolioId"]) 
         .index("by_profileId", ["profileId"]),
 });

@@ -6,6 +6,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
 interface EditModalProps {
@@ -14,6 +15,8 @@ interface EditModalProps {
     context: React.ReactNode;
     setClose: React.Dispatch<React.SetStateAction<boolean>>;
     close: boolean;
+    noSticky?: boolean;
+    hFit?: boolean;
 }
 
 const EditModal = ({ 
@@ -21,7 +24,9 @@ const EditModal = ({
     title,
     context,
     setClose,
-    close
+    close,
+    noSticky,
+    hFit
 }: EditModalProps) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     
@@ -37,12 +42,18 @@ const EditModal = ({
                 <DialogTrigger asChild>
                     {children}
                 </DialogTrigger>
-                <DialogContent className="max-w-[750px] h-[700px] sm:rounded-2xl sm:p-0 p-0">
+                <DialogContent className={cn("max-w-[750px] sm:rounded-2xl sm:p-0 p-0", hFit === true ? "h-fit" : " h-[700px] ")}>
                     <div className="w-full h-full flex flex-1 flex-col overflow-y-scroll">
                         <DialogHeader>
+                            {!noSticky &&
                             <DialogTitle className="text-4xl sticky top-0 left-0 bg-white pb-[20px] rounded-xl pl-[30px] pr-[30px] pt-[30px]">
                                 {title}
-                            </DialogTitle>
+                            </DialogTitle>}
+                            {noSticky && 
+                                <DialogTitle className="text-4xl p-[30px] pb-[0px]">
+                                    {title}
+                                </DialogTitle>
+                            }
                             <DialogDescription className="h-full p-[30px] pt-0">
                                 {context}
                             </DialogDescription>
