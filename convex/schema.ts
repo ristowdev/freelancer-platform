@@ -347,7 +347,7 @@ export default defineSchema({
         profileId: v.id("profile"),
         language: v.string(),
         proficiencyLevel: v.union(
-            v.literal("Basic"),
+            v.literal("Basic"), 
             v.literal("Conversational"),
             v.literal("Fluent"),
             v.literal("Native or Bilingual"),

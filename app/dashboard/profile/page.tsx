@@ -22,6 +22,10 @@ import ProfileOverview from "./_components/edit/profile-overview";
 import ReadMore from "./_components/read-more";
 import AddProjectInPortfolio from "./_components/edit/portfolio/add";
 // import { ComboboxDemo } from "./_components/edit/languages/add/form";
+import { MdOutlineWorkOutline } from "react-icons/md";
+import Image from "next/image";
+import PreviewProject from "./_components/edit/portfolio/preview";
+import DeletePortfolioProject from "./_components/edit/portfolio/delete";
 
 interface DashboardProps {
     
@@ -345,6 +349,47 @@ const Dashboard = ({
                                                 </Button> 
                                             </AddProjectInPortfolio>
                                         </div>
+                                    </div>
+
+                                    <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[15px]">
+                                        {profile?.portfolioProjects?.map((project: any)=> (
+                                            <div className="flex flex-col w-[200px]">
+                                                <div className="w-full h-[180px] rounded-xl bg-[#f0f0f0] flex items-center justify-center group relative">
+                                                    <Image 
+                                                        width={100}
+                                                        height={100}
+                                                        src="/to-do-list.png"
+                                                        alt={project.projectTitle}
+                                                    />
+                                                    <div className="absolute top-0 left-0 rounded-xl bg-[#000000b3] hidden group-hover:flex items-center justify-center w-full h-full flex-col">
+                                                        <DeletePortfolioProject
+                                                            profile={profile}
+                                                            project={project}
+                                                        >
+                                                            <Button 
+                                                                variant="outline"
+                                                                size="icon"
+                                                                className="border-[2px] border-[#118a00] rounded-full p-[6px] m-0 w-[35px] h-[35px] bg-white"   
+                                                            >
+                                                                <Trash color="#118a00" size={30}/>
+                                                            </Button>
+                                                        </DeletePortfolioProject>
+                                                        <PreviewProject
+                                                            profile={profile}
+                                                            project={project}
+                                                        >
+                                                            <Button 
+                                                                className="w-[80px] h-fit p-0 m-0 mt-[10px] text-sm bg-white border border-[#118a00] text-[#118a00] hover:bg-slate-100 pt-[5px] pb-[5px]"
+                                                            >
+                                                                Preview
+                                                            </Button>
+                                                        </PreviewProject>
+
+                                                    </div>
+                                                </div>
+                                                <span className="mt-[10px] text-[#108a00] font-medium">{project.projectTitle}</span>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             </div>

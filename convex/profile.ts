@@ -48,10 +48,41 @@ export const getDetails = query({
             .withIndex("by_profileId", (q) => q.eq("profileId", profile?._id))
             .order("asc")
             .collect();
- 
+        
+        const allProjectsInPortfolio = await ctx.db
+            .query("portfolio")
+            .withIndex("by_profileId", (q) => q.eq("profileId", profile?._id))
+            .collect();
+
+        // const filesByPortfolioId = await ctx.db.query("files")
+        //         .withIndex("by_messageId", (q) => q.eq("messageId", message._id))
+        //         .collect(); 
+            
+        const allProjectsInPortfolioWithFiles = await Promise.all(allProjectsInPortfolio.map(async (portfolio) => {
+
+            const files = await ctx.db.query("portfolioFiles")
+                .withIndex("by_portfolioId", (q) => q.eq("portfolioId", portfolio?._id))
+                .collect();
+
+            const filesWithStorageRelation = await Promise.all(files.map(async (file: any) => {
+                const url = await ctx.storage.getUrl(file.fileId as Id<"_storage">);
+                return {
+                    ...file,
+                    url
+                }
+            }));
+
+
+            return {
+                ...portfolio,
+                files: filesWithStorageRelation
+            }
+        })); 
+
         return {
             ...profile,
-            languages
+            languages,
+            portfolioProjects:allProjectsInPortfolioWithFiles
         }
     },
 });
@@ -385,5 +416,51 @@ export const createFile = mutation({
             portfolioId: undefined,
             profileId: profile._id 
         });
+    },
+});
+
+export const deletePortfolioProject = mutation({
+    args: {
+        portfolioId: v.id("portfolio"),
+    },
+    handler: async (ctx, args) => {
+
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) {
+            throw new Error("Called storeUser without authentication present");
+        }
+
+        // Check if we've already stored this identity before.
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_token", (q) =>
+                q.eq("tokenIdentifier", identity.subject)
+            )
+            .unique(); 
+
+        const profile = await ctx.db
+            .query("profile")
+            .withIndex("by_userId", (q) =>
+                q.eq("userId", user?._id as Id<"users">)
+            )
+            .unique();
+
+        if(!profile){
+            throw new Error("Profile not found");
+        }
+
+        const portfolioProjects = await ctx.db
+            .query("portfolio")
+            .filter((q)=>
+                q.and(
+                    q.eq(q.field("profileId"), profile._id),
+                    q.eq(q.field("_id"), args.portfolioId)
+                )
+            )
+            .unique();
+
+        await ctx.db.delete(portfolioProjects?._id as Id<"portfolio">);
+        
+        return true;
     },
 });
